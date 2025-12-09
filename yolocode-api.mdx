@@ -1,0 +1,968 @@
+---
+title: Yolocode E2B Sandboxes API
+description: Add Claude Code to your React app with one API call
+---
+
+# 🚀 The Magic Hack to Win Any Hackathon
+
+Add Claude Code - the world's most powerful coding agent - to your React app with ONE API call.
+
+```bash
+# 1. Create a sandbox (takes ~10 seconds)
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-agent"}'
+```
+
+```javascript
+// 2. Plug the URL into Vercel AI SDK (literally one line)
+const { messages, input, handleSubmit } = useChat({
+  api: 'https://9999-{sandboxId}.e2b.app/chat',
+});
+```
+
+That's it. You now have a full coding agent in your app that can:
+
+- 🎨 Image generation pipelines - Execute 20-30 complex steps automatically
+- 🎛️ Self-updating admin panels - Agent modifies your UI in real-time
+- 📄 Document processing - Upload 50+ random files, ask agent to convert them
+- 🎬 Video editing - Crop, edit, convert with ffmpeg using natural language
+- 📊 Data analysis - Upload massive CSVs and get instant insights
+
+## Quick Start
+
+### Step 1: Get Your Agent URL
+
+```bash
+# Create sandbox and get the chat URL
+RESPONSE=$(curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "hackathon-agent"}')
+
+CHAT_URL=$(echo $RESPONSE | jq -r '"https://" + .claudeHost + "/chat"')
+echo $CHAT_URL
+# Output: https://9999-abc123xyz.e2b.app/chat
+```
+
+### Step 2: Integrate with React
+
+```javascript
+import { useChat } from '@ai-sdk/react';
+
+export default function MyApp() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: 'https://9999-abc123xyz.e2b.app/chat', // Your agent URL
+  });
+
+  return (
+    <div>
+      {messages.map(m => (
+        <div key={m.id}>
+          {m.role}: {m.content}
+        </div>
+      ))}
+
+      <form onSubmit={handleSubmit}>
+        <input value={input} onChange={handleInputChange} />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+### Step 3: Test via cURL
+
+```bash
+# Send a message to your agent
+curl -X POST "https://9999-abc123xyz.e2b.app/chat" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{
+      "role": "user",
+      "content": "Create a data visualization from sales.csv"
+    }]
+  }' \
+  --no-buffer
+```
+
+## Real-World Examples
+
+### Image Processing Pipeline
+
+```javascript
+// User uploads images, agent processes them automatically
+const { sendMessage } = useChat({
+  api: 'https://9999-xyz.e2b.app/chat',
+});
+
+sendMessage({
+  content: 'Resize all images in /uploads to 800x600, convert to WebP, optimize for web',
+});
+// Agent executes: find, convert, imagemagick, optimization - all automatically
+```
+
+### Self-Updating Dashboard
+
+```javascript
+// Agent modifies your React components live
+sendMessage({
+  content: 'Add a new chart showing revenue by region to Dashboard.tsx',
+});
+// Agent reads your code, adds the component, installs dependencies if needed
+```
+
+### Document Converter
+
+```javascript
+// Process dozens of files with natural language
+sendMessage({
+  content: 'Convert all PDFs in /docs to markdown, extract tables to CSV',
+});
+// Agent uses pdftotext, pandoc, custom scripts - figures it out
+```
+
+## Overview
+
+The Yolocode API provides cloud-based development environments (sandboxes) powered by E2B infrastructure, with:
+
+- Claude Code integration - Full coding agent with filesystem access
+- GitHub repository support - Auto-clone and setup your repos (tested with private repos)
+- WebSSH terminal - Direct shell access
+- Real-time code execution - Run commands, edit files, install packages
+
+### Repository Cloning
+
+When you provide `githubRepo` and `githubToken`, the sandbox automatically:
+
+1. Clones the repository to `/home/user/workspace`
+2. Configures git with your GitHub credentials
+3. Installs dependencies (detects bun, npm, yarn, pnpm)
+4. Runs any setup defined in `yolocode.yaml`
+
+Example startup log showing successful clone:
+
+```
+📂 Cloning repository: makedora/dora-telegram
+✅ Repository setup complete!
+Repository: /home/user/workspace (cloned from makedora/dora-telegram)
+```
+
+## Authentication
+
+### GitHub Authentication (Required)
+
+All API endpoints require GitHub OAuth authentication. Include your GitHub token in the Authorization header:
+
+```
+Authorization: Bearer YOUR_GITHUB_TOKEN
+```
+
+To obtain a GitHub token:
+
+```bash
+gh auth token
+```
+
+### Claude Authentication (Optional - Use Your Own Credits)
+
+Claude AI is always enabled in your sandbox. You have two options for how it's authenticated:
+
+#### Option 1: No Claude Credentials (Uses yolocode API credits - Default)
+
+If you don't provide `claudeCredentials`, the sandbox will use yolocode's Claude API key. This means:
+
+- ✅ Claude AI works immediately, no setup needed
+- ✅ Perfect for testing and hackathons
+- ⚠️ Uses yolocode's API credits (limited free usage)
+- ⚠️ May be rate-limited during high usage
+
+```bash
+# Create sandbox using yolocode's Claude API credits
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-sandbox"}'
+```
+
+#### Option 2: Bring Your Own Claude Credentials (Unlimited usage on your account)
+
+For unlimited usage without rate limits, bring your own Claude OAuth credentials. Here's how:
+
+**Step 1: Get Claude Account**
+
+1. Sign up at [claude.ai](https://claude.ai)
+2. Get a Pro or Max subscription (required for API access)
+
+**Step 2: Extract Credentials from Claude Desktop/Web**
+
+The easiest way is to inspect your browser's network requests:
+
+1. Open claude.ai in Chrome/Firefox
+2. Open Developer Tools (F12) → Network tab
+3. Filter for "oauth" or "token"
+4. Make a request (start a chat)
+5. Look for requests to api.anthropic.com or console.anthropic.com
+6. Find the Authorization header - it contains your access token
+
+Alternative: Use the yolocode mobile app
+
+1. Download yolocode mobile app
+2. Connect Claude account via OAuth
+3. Credentials are stored and automatically used
+
+**Step 3: Pass Credentials to API**
+
+```bash
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-ai-sandbox",
+    "claudeCredentials": {
+      "accessToken": "your_access_token_here",
+      "refreshToken": "your_refresh_token_here",
+      "expiresAt": "2025-12-31T23:59:59Z"
+    }
+  }'
+```
+
+<Note>
+Claude credentials format:
+```json
+{
+  "accessToken": "string",    // OAuth access token
+  "refreshToken": "string",   // OAuth refresh token
+  "expiresAt": "string",      // ISO 8601 timestamp
+  "account": {                // Optional
+    "id": "string",
+    "name": "string"
+  },
+  "subscriptionInfo": {       // Optional
+    "hasAvailableMaxSubscription": "boolean",
+    "hasAvailableSubscription": "boolean"
+  }
+}
+```
+</Note>
+
+<Warning>
+Never commit credentials to git. Use environment variables or secure credential management.
+</Warning>
+
+## Base URL
+
+```
+https://staging.yolocode.ai/api/e2b-sandboxes
+```
+
+## API Endpoints
+
+### Create Sandbox (The Only Endpoint You Need)
+
+<CodeGroup>
+```bash Minimal Request
+# Simplest possible request - just a name
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-sandbox"}'
+```
+
+```bash Full Request
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-dev-sandbox",
+    "template": "yhviqh0tk1bo8z7uu1qf",
+    "taskDescription": "Build a React application with TypeScript",
+    "githubToken": "ghp_xxxxx",
+    "githubRepo": "username/repository",
+    "repositorySetup": {
+      "environmentVariables": {
+        "NODE_ENV": "development",
+        "API_KEY": "secret123"
+      }
+    },
+    "claudeCredentials": {
+      "accessToken": "claude_access_token",
+      "refreshToken": "claude_refresh_token",
+      "expiresAt": "2025-01-12T10:00:00Z"
+    },
+    "timeout": 3600,
+    "autoPause": true
+  }'
+```
+</CodeGroup>
+
+**What happens during sandbox creation:**
+
+The API automatically sets up a fully configured development environment:
+
+1. Creates E2B sandbox with specified template and metadata
+2. Starts background startup script (`/home/user/start.sh`) for repository cloning and setup
+3. Configures Claude authentication (OAuth, JWT, or no-auth mode)
+4. Sets up workspace at `/home/user/workspace` and makes it the default directory
+5. Starts WebSSH server via systemd on port 8888
+6. Starts Claude SSE server via systemd on port 9999
+7. Configures environment variables in both systemd services and `.bashrc`
+
+The sandbox is immediately ready to use - no additional API calls needed to start services.
+
+#### Request Body
+
+All fields except `name` are optional.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string (required) | Unique identifier for the sandbox |
+| `template` | string | E2B template ID - defaults to `yhviqh0tk1bo8z7uu1qf` (cloud) or `rki5dems9wqfm4r03t7g` (self-hosted) |
+| `taskDescription` | string | Used to generate human-readable display name via AI |
+| `githubToken` | string | GitHub personal access token for repository operations |
+| `githubRepo` | string | Repository to clone in format "owner/repo" |
+| `repositorySetup` | object | Configuration for repository environment |
+| `repositorySetup.environmentVariables` | object | Environment variables to set in the sandbox |
+| `claudeCredentials` | object | Claude OAuth credentials for AI assistance |
+| `envVars` | object | Additional environment variables |
+| `timeout` | number | Sandbox timeout in seconds - defaults to 3600 (1 hour) for cloud, 86400 (24 hours) for self-hosted |
+| `autoPause` | boolean | Enable auto-pause when idle - defaults to true |
+
+#### Response Example
+
+```json
+{
+  "id": "sb_abc123xyz",
+  "name": "react-dev-env",
+  "template": "yhviqh0tk1bo8z7uu1qf",
+  "status": "running",
+  "createdAt": "2025-01-11T11:00:00Z",
+  "metadata": {
+    "userId": "12345",
+    "userLogin": "johndoe",
+    "displayName": "react typescript application builder",
+    "name": "react-dev-env",
+    "actualSandboxName": "react-dev-env",
+    "githubRepo": "myuser/my-react-app",
+    "autoPause": "true"
+  },
+  "githubRepo": "myuser/my-react-app",
+  "host": "https://8888-sb_abc123xyz.e2b.app",
+  "websshHost": "https://8888-sb_abc123xyz.e2b.app",
+  "claudeHost": "https://9999-sb_abc123xyz.e2b.app"
+}
+```
+
+<Tip>
+Use `claudeHost + /chat` for your Vercel AI SDK integration
+</Tip>
+
+### List All Sandboxes
+
+```bash
+curl -X GET https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)"
+```
+
+**Response Example:**
+
+```json
+[
+  {
+    "id": "sandbox_abc123",
+    "name": "my-dev-sandbox",
+    "template": "4mc4d3ts8akgu5790i35",
+    "status": "running",
+    "createdAt": "2025-01-11T10:00:00Z",
+    "metadata": {
+      "userId": "12345",
+      "userLogin": "johndoe",
+      "displayName": "Build React App"
+    },
+    "githubRepo": "johndoe/my-project",
+    "region": "us-east-1",
+    "host": "sandbox-abc123.e2b.dev"
+  }
+]
+```
+
+### Get Sandbox Details
+
+```bash
+curl -X GET https://staging.yolocode.ai/api/e2b-sandboxes/sandbox_xyz789 \
+  -H "Authorization: Bearer $(gh auth token)"
+```
+
+### Execute Command
+
+```bash
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/sandbox_xyz789/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "npm run test"}'
+```
+
+**Response Example:**
+
+```json
+{
+  "output": "Test Results:\n✓ All tests passed (42 tests, 0 failures)"
+}
+```
+
+### Start Sandbox
+
+```bash
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/sandbox_xyz789/start \
+  -H "Authorization: Bearer $(gh auth token)"
+```
+
+### Stop Sandbox
+
+```bash
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/sandbox_xyz789/stop \
+  -H "Authorization: Bearer $(gh auth token)"
+```
+
+<Warning>
+E2B doesn't support graceful stop - only kill (permanent deletion). Stop operation is equivalent to delete.
+</Warning>
+
+### Delete Sandbox
+
+```bash
+curl -X DELETE https://staging.yolocode.ai/api/e2b-sandboxes/sandbox_xyz789 \
+  -H "Authorization: Bearer $(gh auth token)"
+```
+
+### Write File to Sandbox
+
+Writes a file to the sandbox filesystem. Supports both binary file uploads (via FormData) and text content (via JSON).
+
+<CodeGroup>
+```bash FormData Upload
+curl -X POST https://staging.yolocode.ai/api/e2b/sandbox_xyz789/files/write \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -F "file=@/path/to/local/image.png" \
+  -F "path=/home/user/workspace/uploads/image.png"
+```
+
+```bash JSON Upload
+curl -X POST https://staging.yolocode.ai/api/e2b/sandbox_xyz789/files/write \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "path": "/home/user/workspace/config.json",
+    "content": "{\"key\": \"value\"}"
+  }'
+```
+</CodeGroup>
+
+**Use Cases:**
+
+- Upload images, PDFs, or other binary files for processing
+- Write configuration files
+- Deploy static assets to the sandbox
+- Upload data files for analysis
+
+### Configure Claude Credentials
+
+Updates Claude AI credentials for a sandbox after creation.
+
+```bash
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/sandbox_xyz789/claude-credentials \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claudeCredentials": {
+      "accessToken": "xxx",
+      "refreshToken": "yyy",
+      "expiresAt": "2025-01-12T10:00:00Z"
+    }
+  }'
+```
+
+## Integrating with Your App
+
+### React with Vercel AI SDK
+
+After creating a sandbox, you can immediately interact with Claude AI using the `claudeHost` URL returned in the response. The Claude SSE server is automatically started during sandbox creation and provides an SSE (Server-Sent Events) endpoint compatible with Vercel AI SDK's `useChat` hook.
+
+<Note>
+No additional setup required - the server is running and ready to accept requests as soon as the sandbox creation completes.
+</Note>
+
+#### React Native Example
+
+```javascript
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from '@ai-sdk/ui-utils';
+
+// After creating sandbox, you get claudeHost in response
+// Example: "9999-sandbox-xyz789.e2b.app"
+const sandboxResponse = await createSandbox(/* ... */);
+const { claudeHost } = sandboxResponse;
+
+// Build SSE URL for E2B Claude server
+const sseUrl = claudeHost.startsWith('http') ? `${claudeHost}/chat` : `https://${claudeHost}/chat`;
+
+// Use Vercel AI SDK's useChat hook with custom API endpoint
+const { messages, sendMessage, error, status, stop } = useChat({
+  transport: new DefaultChatTransport({
+    fetch: expoFetch as unknown as typeof globalThis.fetch,
+    api: sseUrl,
+  }),
+  onFinish: ({ message }) => {
+    console.log('Chat finished, new message:', message);
+  },
+  onError: error => {
+    // Check if this is a cancellation error from the stop button
+    const errorMessage = error?.message || error?.toString() || '';
+    if (
+      errorMessage.includes('FetchRequestCanceledException') ||
+      errorMessage.includes('AbortError') ||
+      errorMessage.includes('canceled')
+    ) {
+      console.log('Request cancelled by user');
+      return; // Don't show error for intentional cancellation
+    }
+
+    console.error('Chat error:', error);
+    showErrorToast('Connection Error', 'Failed to connect to Claude');
+  },
+});
+
+// Send a message programmatically
+await sendMessage({
+  text: 'Help me build a React component',
+});
+```
+
+#### Node.js/TypeScript Example
+
+```javascript
+import { streamText } from 'ai';
+
+// Build SSE URL from claudeHost
+const claudeHost = '9999-sandbox-xyz789.e2b.app';
+const sseUrl = `https://${claudeHost}/chat`;
+
+// Send a message and stream the response
+const response = await fetch(sseUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    messages: [
+      {
+        role: 'user',
+        content: 'Explain the code in package.json',
+      },
+    ],
+  }),
+});
+
+// Handle streaming response
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+
+  const chunk = decoder.decode(value);
+  console.log('Received:', chunk);
+}
+```
+
+#### cURL Example
+
+```bash
+# Get claudeHost from sandbox creation response
+CLAUDE_HOST="9999-sandbox-xyz789.e2b.app"
+
+# Send a message to Claude via SSE endpoint
+curl -X POST "https://${CLAUDE_HOST}/chat" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [
+      {
+        "role": "user",
+        "content": "List all files in the workspace"
+      }
+    ]
+  }' \
+  --no-buffer
+```
+
+### Available Claude Commands
+
+Claude in the E2B sandbox can execute various commands and file operations:
+
+```javascript
+// Ask Claude to read files
+await sendMessage({
+  role: 'user',
+  content: 'Read the package.json file and explain the dependencies',
+});
+
+// Ask Claude to write code
+await sendMessage({
+  role: 'user',
+  content: 'Create a new React component called UserProfile',
+});
+
+// Ask Claude to run commands
+await sendMessage({
+  role: 'user',
+  content: 'Run the test suite and explain any failures',
+});
+
+// Ask Claude to debug
+await sendMessage({
+  role: 'user',
+  content: 'Debug why the server is not starting on port 3000',
+});
+```
+
+### Handling Streaming Responses
+
+The Claude SSE endpoint streams responses in real-time:
+
+```javascript
+// React Native component example
+function ChatInterface({ claudeHost }) {
+  const sseUrl = `https://${claudeHost}/chat`;
+
+  const { messages, input, handleInputChange, handleSubmit, isLoading, stop } = useChat({
+    api: sseUrl,
+  });
+
+  return (
+    <View>
+      {/* Display messages */}
+      {messages.map((message, i) => (
+        <Text key={i}>
+          {message.role}: {message.content}
+        </Text>
+      ))}
+
+      {/* Input form */}
+      <TextInput
+        value={input}
+        onChangeText={handleInputChange}
+        placeholder="Ask Claude..."
+      />
+
+      {/* Submit/Stop button */}
+      <Button
+        title={isLoading ? "Stop" : "Send"}
+        onPress={isLoading ? stop : handleSubmit}
+      />
+    </View>
+  );
+}
+```
+
+### Error Handling
+
+Handle connection and authentication errors:
+
+```javascript
+const { error, clearError } = useChat({
+  api: sseUrl,
+  onError: error => {
+    if (error.message.includes('401')) {
+      // Claude credentials may be invalid or expired
+      console.error('Authentication failed - update Claude credentials');
+      // Update credentials via API:
+      // POST /api/e2b-sandboxes/{id}/claude-credentials
+    } else if (error.message.includes('timeout')) {
+      console.error('Request timed out');
+    } else if (error.message.includes('canceled')) {
+      // User cancelled the request
+      return;
+    }
+  },
+});
+```
+
+## Complete Flow Example
+
+### Creating VM and Giving Tasks
+
+#### Step 1: Create a Sandbox with Repository
+
+```bash
+# Create sandbox with GitHub repository
+SANDBOX_RESPONSE=$(curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "task-runner",
+    "taskDescription": "Implement user authentication with JWT",
+    "githubRepo": "myuser/auth-project",
+    "repositorySetup": {
+      "environmentVariables": {
+        "DATABASE_URL": "postgresql://localhost:5432/mydb",
+        "JWT_SECRET": "your-secret-key"
+      }
+    }
+  }')
+
+# Extract sandbox ID
+SANDBOX_ID=$(echo $SANDBOX_RESPONSE | jq -r '.id')
+echo "Created sandbox: $SANDBOX_ID"
+```
+
+#### Step 2: Execute Setup Commands
+
+```bash
+# Install dependencies
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "cd /home/user/workspace && npm install"}'
+
+# Run tests
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "cd /home/user/workspace && npm test"}'
+```
+
+#### Step 3: Configure Claude for AI Assistance
+
+```bash
+# Add Claude credentials for AI pair programming
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/claude-credentials \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "claudeCredentials": {
+      "accessToken": "your_claude_token",
+      "refreshToken": "your_refresh_token",
+      "expiresAt": "2025-01-12T10:00:00Z"
+    }
+  }'
+```
+
+#### Step 4: Execute Development Tasks
+
+```bash
+# Create a new feature file
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "cat > /home/user/workspace/src/auth.js << EOF\nconst jwt = require(\"jsonwebtoken\");\n// Authentication logic here\nEOF"}'
+
+# Start development server
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "cd /home/user/workspace && npm run dev &"}'
+```
+
+#### Step 5: Monitor and Interact
+
+```bash
+# Check running processes
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "ps aux | grep node"}'
+
+# View logs
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "tail -n 50 /home/user/workspace/logs/dev.log"}'
+```
+
+#### Step 6: Clean Up
+
+```bash
+# Stop the sandbox when done
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/stop \
+  -H "Authorization: Bearer $(gh auth token)"
+
+# Or delete it permanently
+curl -X DELETE https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID \
+  -H "Authorization: Bearer $(gh auth token)"
+```
+
+## Service Endpoints
+
+Each sandbox automatically starts two services via systemd:
+
+### WebSSH Terminal (Port 8888)
+
+- **URL format:** `https://8888-{sandboxId}.e2b.app` (cloud) or `https://8888-{sandboxId}.{E2B_DOMAIN}` (self-hosted)
+- **Service:** `webssh.service` running `/usr/local/bin/wssh`
+- **Auto-started:** Yes, during sandbox creation
+- **Environment:** Includes `GITHUB_TOKEN`, `GITHUB_REPO`, and custom env vars from `repositorySetup`
+- **Working directory:** `/home/user` (shells start in `/home/user/workspace` via `.bashrc`)
+
+### Claude SSE Server (Port 9999)
+
+- **URL format:** `https://9999-{sandboxId}.e2b.app` (cloud) or `https://9999-{sandboxId}.{E2B_DOMAIN}` (self-hosted)
+- **Service:** `claude-sse-server.service` running `/usr/local/bin/bun /home/user/claude-sse-server.ts --continue`
+- **Auto-started:** Yes, during sandbox creation
+- **Environment:** Includes Claude auth tokens, GitHub credentials, and custom env vars
+- **Endpoints:**
+  - `POST /chat` - SSE endpoint for Claude AI conversations (Vercel AI SDK compatible)
+  - `POST /stop` - Optional endpoint to signal task cancellation
+  - `GET /history` - Retrieve chat history (optional, may not be implemented in all versions)
+
+Both services are managed by systemd and will:
+
+- Auto-restart on failure (`Restart=always`, `RestartSec=5`)
+- Start automatically on sandbox boot
+- Log to systemd journal (`journalctl -u webssh` or `journalctl -u claude-sse-server`)
+
+## Debugging Sandbox Services
+
+If you need to check the status of services or debug issues, use the `/exec` endpoint:
+
+### Check Service Status
+
+```bash
+# Check WebSSH service status
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "sudo systemctl status webssh"}'
+
+# Check Claude SSE server status
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "sudo systemctl status claude-sse-server"}'
+```
+
+### View Service Logs
+
+```bash
+# View WebSSH logs (last 50 lines)
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "sudo journalctl -u webssh -n 50 --no-pager"}'
+
+# View Claude SSE server logs
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "sudo journalctl -u claude-sse-server -n 50 --no-pager"}'
+```
+
+### Check Network Ports
+
+```bash
+# Verify services are listening on correct ports
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "ss -tlnp | grep -E \":(8888|9999)\""}'
+```
+
+### Restart Services
+
+```bash
+# Restart WebSSH
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "sudo systemctl restart webssh"}'
+
+# Restart Claude SSE server
+curl -X POST https://staging.yolocode.ai/api/e2b-sandboxes/$SANDBOX_ID/exec \
+  -H "Authorization: Bearer $(gh auth token)" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "sudo systemctl restart claude-sse-server"}'
+```
+
+## Error Handling
+
+All endpoints return appropriate HTTP status codes:
+
+- **200** - Success
+- **201** - Created (for POST /api/e2b-sandboxes)
+- **400** - Bad Request (invalid input)
+- **401** - Unauthorized (missing or invalid GitHub token)
+- **403** - Forbidden (accessing sandbox not owned by user)
+- **404** - Not Found (sandbox doesn't exist)
+- **500** - Internal Server Error
+
+**Error Response Format:**
+
+```json
+{
+  "error": "Error message description",
+  "details": {
+    "_tag": "ErrorType",
+    "message": "Detailed error message"
+  }
+}
+```
+
+## Template IDs
+
+The API automatically selects the appropriate E2B template based on hosting configuration:
+
+- **Cloud Template:** `yhviqh0tk1bo8z7uu1qf` (default when E2B_DOMAIN is not set)
+- **Self-hosted Template:** `rki5dems9wqfm4r03t7g` (when E2B_DOMAIN environment variable is configured)
+
+You can override the template by providing a `template` field in your request.
+
+## Sandbox Lifecycle
+
+1. **Creation:** Sandbox starts automatically when created with all services running
+   - WebSSH server (port 8888) starts via systemd
+   - Claude SSE server (port 9999) starts via systemd
+   - Background startup script begins repository setup
+   - All environment variables configured in services and shell
+
+2. **Running:** Sandbox is active and executing commands
+   - Both services are accessible and auto-restart on failure
+   - Terminal sessions use configured environment variables
+
+3. **Paused:** Sandbox can be paused to save resources (auto-pause supported)
+   - Services stop but state is preserved
+   - Resume with `POST /api/e2b-sandboxes/{id}/resume`
+
+4. **Stopped:** E2B doesn't support graceful stop - only kill (permanent deletion)
+   - Stop operation is equivalent to delete
+   - Cannot be restarted after stopping
+
+5. **Deleted:** Sandbox is permanently removed
+
+## Security Considerations
+
+- **Authentication:** All requests require valid GitHub OAuth tokens
+- **Ownership:** Users can only access their own sandboxes
+- **Isolation:** Each sandbox runs in an isolated environment
+- **Credentials:** Claude credentials are stored securely and never exposed in responses
+- **JWT Tokens:** Sandbox-specific JWT tokens are generated for Claude gateway authentication
+
+## Rate Limits
+
+- Maximum request duration: 300 seconds (5 minutes)
+- Sandbox timeout: 1 hour (cloud) or 24 hours (self-hosted)
+- Concurrent sandboxes: Depends on E2B plan
+
+## Best Practices
+
+- Always clean up sandboxes when done to avoid unnecessary charges
+- Use `autoPause` for sandboxes that may be idle
+- Store sensitive environment variables in `repositorySetup.environmentVariables`
+- Use descriptive task descriptions for better AI-generated display names
+- Monitor sandbox resource usage through the E2B dashboard
+
+## References
+
+- [Vercel AI SDK useChat Documentation](https://sdk.vercel.ai/docs/reference/ai-sdk-ui/use-chat)
+- [Vercel AI SDK Streaming](https://sdk.vercel.ai/docs/ai-sdk-ui/streaming)
