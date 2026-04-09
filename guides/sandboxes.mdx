@@ -7,14 +7,14 @@ Sandboxes are isolated cloud development environments. Each sandbox has its own 
 
 ## Providers
 
-YoloCode supports two sandbox providers:
+Yolocode supports two sandbox providers:
 
 <Tabs>
   <Tab title="E2B">
     [E2B](https://e2b.dev) provides cloud code interpreter sandboxes. Supports both cloud-hosted and self-hosted deployments.
 
     **Templates:**
-    - `yolocode` — Full YoloCode environment with Claude integration (port 7031 for API)
+    - `yolocode` — Full Yolocode environment with Claude integration (port 7031 for API)
     - `default` — Minimal sandbox with Claude SSE server on port 9999
 
     **Auto-pause:** 1 hour (cloud), 24 hours (self-hosted)
@@ -50,7 +50,7 @@ curl -X POST https://api.yolocode.ai/api/e2b-sandboxes \
   }'
 ```
 
-When you create a sandbox, YoloCode:
+When you create a sandbox, Yolocode:
 1. Generates a human-readable display name using Claude AI
 2. Sets up Claude credentials (JWT or OAuth) inside the sandbox
 3. Clones your GitHub repo if specified
