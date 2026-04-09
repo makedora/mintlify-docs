@@ -5,6 +5,10 @@ description: AI-powered coding with Claude inside your sandboxes
 
 Every Yolocode sandbox can connect to Claude AI for coding assistance. There are two auth mechanisms for Claude access.
 
+<Warning>
+This page covers Claude credentials **inside sandboxes**. For authenticating API requests to Yolocode, see [Authentication](/authentication) — you need a GitHub token, not a Claude token.
+</Warning>
+
 ## Auth methods
 
 ### JWT (default)
@@ -17,7 +21,7 @@ For full Claude access (using your own Anthropic account), you can inject OAuth 
 
 ```bash
 curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<id>/claude-credentials \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <github_token_ghp_...>" \
   -H "Content-Type: application/json" \
   -d '{
     "accessToken": "<claude_access_token>",

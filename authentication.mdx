@@ -5,10 +5,14 @@ description: How auth works in Yolocode
 
 Yolocode authenticates users via GitHub. Every API request requires a valid GitHub token passed as a Bearer token in the `Authorization` header.
 
+<Tip>
+Tokens must be **GitHub** personal access tokens (`ghp_...`). Claude API keys (`sk-ant-...`), Anthropic OAuth tokens (`sk-ant-oat...`), and other non-GitHub tokens will return `{"error":"unauthorized"}`.
+</Tip>
+
 ## Auth flow
 
 ```
-Authorization: Bearer <github_token>
+Authorization: Bearer <github_token_ghp_...>
 ```
 
 The API validates your token by calling `GET https://api.github.com/user`. If valid, it extracts your `userId` and `login` for access control.
@@ -55,8 +59,16 @@ Sandboxes use JWT tokens for internal authentication. When you create a sandbox,
 - **Expiry**: 24 hours
 - **Payload**: userId, sandbox name
 
-These JWTs are used internally by the Claude Gateway to validate requests from within sandboxes.
+These JWTs are used internally by the Claude Gateway to validate requests from within sandboxes. Do not use them for API requests.
 
 ## Payment gating
 
 Some features (like the Claude Gateway) require a paid account. The API checks your payment status via WorkOS user metadata. If you haven't paid, the Claude Gateway returns `402 Payment Required`.
+
+## Troubleshooting
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `{"error":"unauthorized"}` | Wrong token type (e.g. Claude API key, Anthropic OAuth token) or expired token | Use a GitHub PAT starting with `ghp_`. Generate one at [github.com/settings/tokens](https://github.com/settings/tokens) with scopes `user repo read:org workflow`. |
+| `401` with valid-looking token | Token lacks required scopes | Regenerate with scopes: `user repo read:org workflow` |
+| `402 Payment Required` | Unpaid account accessing Claude Gateway | Upgrade your account to a paid plan |

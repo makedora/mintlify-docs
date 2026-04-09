@@ -8,9 +8,17 @@ description: Create your first cloud sandbox in under a minute
 - A GitHub account
 - A GitHub personal access token (or use the device flow)
 
+<Warning>
+All API requests use a **GitHub** token (starts with `ghp_`). Do not use Claude API keys (`sk-ant-...`), Anthropic OAuth tokens, or other non-GitHub tokens.
+</Warning>
+
 ## 1. Get a GitHub token
 
-Use the device flow to authenticate without managing tokens manually:
+Use the device flow to authenticate without managing tokens manually.
+
+<Note>
+The device flow requires opening a browser. In a headless environment, generate a token at [github.com/settings/tokens](https://github.com/settings/tokens) with scopes `user repo read:org workflow` instead.
+</Note>
 
 ```bash
 # Initiate device flow
@@ -32,13 +40,13 @@ curl -X POST https://api.yolocode.ai/api/github/device/token \
 
 ```bash
 curl -X POST https://api.yolocode.ai/api/e2b-sandboxes \
-  -H "Authorization: Bearer <your_github_token>" \
+  -H "Authorization: Bearer <your_github_token_ghp_...>" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "my-first-sandbox",
     "taskDescription": "Set up a Next.js project",
     "gitHubRepo": "your-username/your-repo",
-    "githubToken": "<your_github_token>"
+    "githubToken": "<your_github_token_ghp_...>"
   }'
 ```
 
@@ -60,7 +68,7 @@ The response includes your sandbox details:
 
 ```bash
 curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<sandbox_id>/exec \
-  -H "Authorization: Bearer <your_github_token>" \
+  -H "Authorization: Bearer <your_github_token_ghp_...>" \
   -H "Content-Type: application/json" \
   -d '{"command": "ls -la"}'
 ```
@@ -69,7 +77,7 @@ curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<sandbox_id>/exec \
 
 ```bash
 curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<sandbox_id>/chat \
-  -H "Authorization: Bearer <your_github_token>" \
+  -H "Authorization: Bearer <your_github_token_ghp_...>" \
   -H "Content-Type: application/json" \
   -d '{"message": "What files are in this project?"}'
 ```
