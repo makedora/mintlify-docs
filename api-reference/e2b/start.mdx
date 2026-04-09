@@ -1,0 +1,10 @@
+---
+title: Start Sandbox
+api: POST /api/e2b-sandboxes/{id}/start
+description: Start a stopped E2B sandbox
+---
+
+<ParamField path="id" type="string" required>Sandbox ID.</ParamField>
+
+### Response
+Returns the updated sandbox object with `status: "running"`.

@@ -1,0 +1,107 @@
+---
+title: Sandboxes
+description: Cloud dev environments with E2B and Daytona
+---
+
+Sandboxes are isolated cloud development environments. Each sandbox has its own filesystem, terminal access, and optional Claude AI integration.
+
+## Providers
+
+YoloCode supports two sandbox providers:
+
+<Tabs>
+  <Tab title="E2B">
+    [E2B](https://e2b.dev) provides cloud code interpreter sandboxes. Supports both cloud-hosted and self-hosted deployments.
+
+    **Templates:**
+    - `yolocode` — Full YoloCode environment with Claude integration (port 7031 for API)
+    - `default` — Minimal sandbox with Claude SSE server on port 9999
+
+    **Auto-pause:** 1 hour (cloud), 24 hours (self-hosted)
+  </Tab>
+  <Tab title="Daytona">
+    [Daytona](https://daytona.io) is an alternative sandbox provider with similar capabilities.
+
+    **Templates:**
+    - `yolocode` — Full environment with API on port 17031
+
+    **Auto-stop:** 1 hour default interval
+  </Tab>
+</Tabs>
+
+## Lifecycle
+
+```
+create → running → pause/stop → resume/start → running
+                 → archive (Daytona only)
+```
+
+### Creating a sandbox
+
+```bash
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-sandbox",
+    "taskDescription": "Build a REST API",
+    "gitHubRepo": "user/repo",
+    "githubToken": "<token>"
+  }'
+```
+
+When you create a sandbox, YoloCode:
+1. Generates a human-readable display name using Claude AI
+2. Sets up Claude credentials (JWT or OAuth) inside the sandbox
+3. Clones your GitHub repo if specified
+4. Injects any environment variables from `repositorySetup`
+
+### Pausing and resuming
+
+Pause sandboxes to save costs when you're not using them:
+
+```bash
+# Pause (E2B)
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<id>/pause \
+  -H "Authorization: Bearer <token>"
+
+# Resume
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<id>/resume \
+  -H "Authorization: Bearer <token>"
+```
+
+For Daytona, use `archive` instead of `pause`.
+
+### Listing sandboxes
+
+Filter by state:
+
+```bash
+# All sandboxes
+curl "https://api.yolocode.ai/api/e2b-sandboxes?state=all" \
+  -H "Authorization: Bearer <token>"
+
+# Only running
+curl "https://api.yolocode.ai/api/e2b-sandboxes?state=running" \
+  -H "Authorization: Bearer <token>"
+```
+
+## Access control
+
+- Only the sandbox creator can manage it
+- `userOwnsVM()` checks that your GitHub user ID matches the sandbox's `userId` metadata
+- Sandbox metadata stores: `userId`, `userLogin`, `displayName`, `githubRepo`
+
+## Ports
+
+### E2B
+| Port | Service |
+|------|---------|
+| 7030 | UI |
+| 7031 | API / Chat |
+| 8888 | WebSSH |
+
+### Daytona
+| Port | Service |
+|------|---------|
+| 17031 | API / Chat |

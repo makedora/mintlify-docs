@@ -1,0 +1,72 @@
+---
+title: Claude Integration
+description: AI-powered coding with Claude inside your sandboxes
+---
+
+Every YoloCode sandbox can connect to Claude AI for coding assistance. There are two auth mechanisms for Claude access.
+
+## Auth methods
+
+### JWT (default)
+
+When you create a sandbox, a JWT token is automatically generated and injected. This token is used by the Claude Gateway to authenticate requests from within the sandbox.
+
+### OAuth credentials
+
+For full Claude access (using your own Anthropic account), you can inject OAuth credentials:
+
+```bash
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<id>/claude-credentials \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "accessToken": "<claude_access_token>",
+    "refreshToken": "<claude_refresh_token>",
+    "expiresAt": "2024-12-31T00:00:00Z"
+  }'
+```
+
+This writes credentials to `.claude/.credentials.json` inside the sandbox and restarts the Claude WebSocket server.
+
+You can also include optional fields:
+
+```json
+{
+  "accessToken": "...",
+  "refreshToken": "...",
+  "expiresAt": "...",
+  "account": { "id": "acct_123", "name": "My Org" },
+  "selectedModel": "claude-sonnet-4-6-20250514",
+  "subscriptionInfo": {
+    "hasAvailableMaxSubscription": true,
+    "hasAvailableSubscription": true
+  }
+}
+```
+
+## Claude Gateway
+
+The Claude Gateway (`POST /api/claude-gateway/[...path]`) is a proxy that forwards requests to the Claude API with auth validation.
+
+It accepts auth from multiple sources:
+- `x-api-key` header
+- `Authorization: Bearer` or `Basic` header
+- URL query parameter
+
+The gateway checks your payment status before proxying. Unpaid users receive a `402 Payment Required` response.
+
+## Claude OAuth token exchange
+
+YoloCode also proxies the Claude OAuth token exchange to handle CORS:
+
+```bash
+curl -X POST https://api.yolocode.ai/api/claude/v1/oauth/token \
+  -H "Content-Type: application/json" \
+  -d '{
+    "grant_type": "authorization_code",
+    "code": "<auth_code>",
+    "redirect_uri": "<redirect_uri>"
+  }'
+```
+
+This proxies to `https://console.anthropic.com/v1/oauth/token` and returns access/refresh tokens with CORS headers.

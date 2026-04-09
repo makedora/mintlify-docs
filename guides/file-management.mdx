@@ -1,0 +1,52 @@
+---
+title: File Management
+description: Read, write, and browse files inside sandboxes
+---
+
+The file API lets you interact with the filesystem inside your sandboxes.
+
+## Endpoints
+
+All file operations are scoped to a sandbox ID. Available for both E2B and Daytona:
+
+- `GET /api/e2b/<sandboxId>/files/list` — List files in a directory
+- `GET /api/e2b/<sandboxId>/files/read` — Read file contents
+- `POST /api/e2b/<sandboxId>/files/write` — Write file contents
+- `GET /api/e2b/<sandboxId>/files/info` — Get file metadata
+
+Replace `e2b` with `daytona` for Daytona sandboxes.
+
+## Examples
+
+### List files
+
+```bash
+curl "https://api.yolocode.ai/api/e2b/<sandboxId>/files/list?path=/home/user/project" \
+  -H "Authorization: Bearer <token>"
+```
+
+### Read a file
+
+```bash
+curl "https://api.yolocode.ai/api/e2b/<sandboxId>/files/read?path=/home/user/project/package.json" \
+  -H "Authorization: Bearer <token>"
+```
+
+### Write a file
+
+```bash
+curl -X POST "https://api.yolocode.ai/api/e2b/<sandboxId>/files/write" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "path": "/home/user/project/hello.txt",
+    "content": "Hello from YoloCode!"
+  }'
+```
+
+### Get file info
+
+```bash
+curl "https://api.yolocode.ai/api/e2b/<sandboxId>/files/info?path=/home/user/project/package.json" \
+  -H "Authorization: Bearer <token>"
+```

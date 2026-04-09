@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "YoloCode",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#6366F1",
+    "light": "#818CF8",
+    "dark": "#4F46E5"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -14,35 +14,27 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Getting Started",
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "authentication"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Sandboxes",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "guides/sandboxes",
+              "guides/executing-commands",
+              "guides/file-management"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "AI & Streaming",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "guides/claude-integration",
+              "guides/chat-streaming",
+              "guides/transcription"
             ]
           }
         ]
@@ -60,21 +52,81 @@
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Overview",
             "pages": [
               "api-reference/introduction"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Authentication",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/auth/oauth-callback",
+              "api-reference/auth/oauth-token",
+              "api-reference/auth/device-code",
+              "api-reference/auth/device-token",
+              "api-reference/auth/claude-oauth"
+            ]
+          },
+          {
+            "group": "E2B Sandboxes",
+            "pages": [
+              "api-reference/e2b/list",
+              "api-reference/e2b/create",
+              "api-reference/e2b/get",
+              "api-reference/e2b/start",
+              "api-reference/e2b/stop",
+              "api-reference/e2b/pause",
+              "api-reference/e2b/resume",
+              "api-reference/e2b/exec",
+              "api-reference/e2b/chat",
+              "api-reference/e2b/claude-credentials",
+              "api-reference/e2b/preview-status"
+            ]
+          },
+          {
+            "group": "Daytona Sandboxes",
+            "pages": [
+              "api-reference/daytona/list",
+              "api-reference/daytona/create",
+              "api-reference/daytona/get",
+              "api-reference/daytona/start",
+              "api-reference/daytona/stop",
+              "api-reference/daytona/resume",
+              "api-reference/daytona/archive",
+              "api-reference/daytona/exec",
+              "api-reference/daytona/chat"
+            ]
+          },
+          {
+            "group": "Files",
+            "pages": [
+              "api-reference/files/list",
+              "api-reference/files/read",
+              "api-reference/files/write",
+              "api-reference/files/info"
+            ]
+          },
+          {
+            "group": "Claude Gateway",
+            "pages": [
+              "api-reference/claude-gateway"
+            ]
+          },
+          {
+            "group": "Transcription",
+            "pages": [
+              "api-reference/transcription/stream",
+              "api-reference/transcription/basic"
+            ]
+          },
+          {
+            "group": "Utility",
+            "pages": [
+              "api-reference/utility/health",
+              "api-reference/utility/waitlist"
             ]
           }
         ]
@@ -83,14 +135,9 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "API Status",
+          "href": "https://api.yolocode.ai/api/health",
+          "icon": "signal"
         }
       ]
     }
@@ -103,32 +150,31 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@yolocode.ai"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Launch App",
+      "href": "https://yolocode.ai"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "github": "https://github.com/makedora"
     }
+  },
+  "api": {
+    "baseUrl": "https://api.yolocode.ai"
   }
 }

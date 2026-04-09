@@ -1,0 +1,29 @@
+---
+title: Exchange OAuth Code
+api: POST /api/github/oauth/token
+description: Exchange a GitHub OAuth code for an access token
+---
+
+Exchanges a GitHub OAuth authorization code for an access token.
+
+### Body
+
+<ParamField body="code" type="string" required>
+  The authorization code received from the OAuth callback.
+</ParamField>
+
+### Response
+
+Returns the GitHub access token response.
+
+<ResponseField name="access_token" type="string">
+  GitHub access token.
+</ResponseField>
+
+<ResponseField name="token_type" type="string">
+  Token type (usually `bearer`).
+</ResponseField>
+
+<ResponseField name="scope" type="string">
+  Granted OAuth scopes.
+</ResponseField>

@@ -1,0 +1,13 @@
+---
+title: List Sandboxes
+api: GET https://api.yolocode.ai/api/daytona-sandboxes
+description: List Daytona sandboxes
+---
+
+Returns an array of sandbox objects for the authenticated user.
+
+<ParamField header="Authorization" type="string" required>Bearer token. `Bearer <github_token>`</ParamField>
+
+<ParamField query="state" type="string" default="all">
+  Filter by sandbox state: `running`, `archived`, or `all`.
+</ParamField>

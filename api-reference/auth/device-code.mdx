@@ -1,0 +1,35 @@
+---
+title: Request Device Code
+api: POST /api/github/device/code
+description: Initiate GitHub device flow authentication
+---
+
+Starts the GitHub device flow. Returns a user code and verification URL for the user to visit.
+
+### Body
+
+<ParamField body="scope" type="string" default="user repo read:org workflow">
+  OAuth scopes to request.
+</ParamField>
+
+### Response
+
+<ResponseField name="device_code" type="string">
+  Device code for polling.
+</ResponseField>
+
+<ResponseField name="user_code" type="string">
+  Code the user enters at the verification URL.
+</ResponseField>
+
+<ResponseField name="verification_uri" type="string">
+  URL where the user enters the code.
+</ResponseField>
+
+<ResponseField name="expires_in" type="number">
+  Seconds until the device code expires.
+</ResponseField>
+
+<ResponseField name="interval" type="number">
+  Minimum polling interval in seconds.
+</ResponseField>

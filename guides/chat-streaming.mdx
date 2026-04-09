@@ -1,0 +1,41 @@
+---
+title: Chat & Streaming
+description: Real-time AI chat via Server-Sent Events
+---
+
+The chat endpoint streams Claude's responses in real-time using Server-Sent Events (SSE).
+
+## Usage
+
+```bash
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<id>/chat \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Explain this codebase"}' \
+  --no-buffer
+```
+
+## How it works
+
+1. Your request hits the YoloCode API
+2. The API proxies it to the sandbox's internal chat service (port 7031 for E2B, port 17031 for Daytona)
+3. The response streams back as `text/event-stream`
+
+### Response headers
+
+```
+Content-Type: text/event-stream
+Cache-Control: no-cache
+Connection: keep-alive
+```
+
+### Stream format
+
+The response is a standard SSE stream. Each event contains a chunk of Claude's response.
+
+## Notes
+
+- The chat endpoint has a max duration of 300 seconds
+- The stream proxies directly from the sandbox's internal API
+- Both E2B and Daytona sandboxes support chat streaming
+- The internal sandbox service maintains conversation history per connection

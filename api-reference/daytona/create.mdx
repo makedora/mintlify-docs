@@ -1,0 +1,19 @@
+---
+title: Create Sandbox
+api: POST https://api.yolocode.ai/api/daytona-sandboxes
+description: Create a new Daytona sandbox
+---
+
+Creates a new Daytona sandbox for the authenticated user.
+
+<ParamField header="Authorization" type="string" required>Bearer token. `Bearer <github_token>`</ParamField>
+
+<ParamField body="name" type="string" required>Sandbox name.</ParamField>
+<ParamField body="taskDescription" type="string">Description for AI display name generation.</ParamField>
+<ParamField body="template" type="string" default="yolocode">Template name.</ParamField>
+<ParamField body="gitHubRepo" type="string">GitHub repo to clone (`owner/repo`).</ParamField>
+<ParamField body="githubToken" type="string">GitHub token for repo access.</ParamField>
+<ParamField body="claudeCredentials" type="object">Claude OAuth credentials.</ParamField>
+<ParamField body="repositorySetup" type="object">Setup config with `environmentVariables`.</ParamField>
+
+Response includes `id`, `name`, `displayName`, `status`, `host`, `claudeHost`.
