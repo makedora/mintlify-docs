@@ -14,27 +14,20 @@ All API requests use a **GitHub** token (starts with `ghp_`). Do not use Claude 
 
 ## 1. Get a GitHub token
 
-Use the device flow to authenticate without managing tokens manually.
-
-<Note>
-The device flow requires opening a browser. In a headless environment, generate a token at [github.com/settings/tokens](https://github.com/settings/tokens) with scopes `user repo read:org workflow` instead.
-</Note>
+Install the [GitHub CLI](https://cli.github.com/) and authenticate:
 
 ```bash
-# Initiate device flow
-curl -X POST https://api.yolocode.ai/api/github/device/code \
-  -H "Content-Type: application/json" \
-  -d '{"scope": "user repo read:org workflow"}'
+# Install gh (macOS)
+brew install gh
+
+# Login via browser
+gh auth login
+
+# Get your token
+export GITHUB_TOKEN=$(gh auth token)
 ```
 
-This returns a `user_code` and `verification_uri`. Open the URL in your browser, enter the code, and then poll for the token:
-
-```bash
-# Poll for token
-curl -X POST https://api.yolocode.ai/api/github/device/token \
-  -H "Content-Type: application/json" \
-  -d '{"device_code": "<device_code_from_step_above>"}'
-```
+This opens a browser for OAuth login and stores credentials locally. `gh auth token` prints the token for use with the API.
 
 ## 2. Create a sandbox
 
