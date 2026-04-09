@@ -1,0 +1,3 @@
+{
+  "pages": ["list", "create", "get", "start", "stop", "pause", "resume", "exec", "chat", "claude-credentials", "preview-status"]
+}

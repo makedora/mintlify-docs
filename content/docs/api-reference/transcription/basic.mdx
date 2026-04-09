@@ -1,0 +1,11 @@
+---
+title: Transcribe
+description: Non-streaming audio transcription
+---
+
+Same parameters as the streaming endpoint but returns the complete transcription in a single response.
+
+<ParamField header="Authorization" type="string" required>Bearer token. `Bearer <github_token>`</ParamField>
+
+<ParamField body="audio" type="string" required>Base64-encoded audio data or file.</ParamField>
+<ParamField body="languageCode" type="string" default="en-US">BCP-47 language code.</ParamField>

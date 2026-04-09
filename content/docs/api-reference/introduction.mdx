@@ -1,0 +1,40 @@
+---
+title: API Reference
+description: Yolocode REST API documentation
+---
+
+Base URL: `https://api.yolocode.ai`
+
+<Note>
+Always use `https://api.yolocode.ai`. Do not use staging or other internal URLs.
+</Note>
+
+## Authentication
+
+All endpoints require a GitHub access token passed as a Bearer token:
+
+```
+Authorization: Bearer <github_token_ghp_...>
+```
+
+Only GitHub personal access tokens are accepted. Claude API keys and other token types will be rejected.
+
+The API validates your token against GitHub's API on every request.
+
+## Response format
+
+All responses are JSON unless otherwise noted (e.g., SSE streams for chat endpoints).
+
+## Rate limits
+
+Sandbox creation and chat endpoints have a max request duration of 300 seconds. Other endpoints use the default 60-second timeout.
+
+## Errors
+
+| Status | Meaning |
+|--------|---------|
+| 401 | Invalid or missing GitHub token. Ensure your token starts with `ghp_` and has scopes: `user repo read:org workflow` |
+| 402 | Payment required (Claude Gateway) |
+| 403 | You don't own this sandbox |
+| 404 | Sandbox or resource not found |
+| 500 | Internal server error |
