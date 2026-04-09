@@ -1,0 +1,31 @@
+---
+title: "April 2026"
+description: "New sandbox provider, payment integration, and sandbox UI improvements."
+---
+
+## New features
+
+### Daytona sandbox support
+
+You can now run sandboxes powered by Daytona as an alternative provider. Daytona sandboxes include full lifecycle management — create, start, stop, resume, and archive — along with built-in chat proxy and live preview status. You can switch between providers directly from the app.
+
+### Stripe payment integration
+
+A payment flow is now required to access the Claude gateway. After authenticating, you're prompted to complete payment through Stripe before using AI features. This ensures a smoother onboarding experience for new users.
+
+## Updates
+
+### Sandbox UI improvements
+
+- **Chat and preview toggle** — Quickly switch between the chat view and a live preview of your sandbox with new toggle buttons. The preview automatically appears when your app is ready.
+- **Input during streaming** — You can now type your next message while the AI is still responding. A stop button lets you cancel the current response at any time.
+- **File uploads while typing** — Upload files without losing your current input. The upload happens in the background so you can keep working.
+- **Improved task display** — The task list (TodoWrite) now has a dedicated renderer that's easier to read at a glance.
+
+### Branch support in sandboxes
+
+Sandboxes now support checking out a specific branch after cloning a repository, giving you more control over which version of your code runs in the sandbox environment.
+
+## Bug fixes
+
+- Fixed an issue where the preview toggle could be overridden by an auto-show effect, causing unexpected view switches.
