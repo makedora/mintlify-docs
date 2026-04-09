@@ -1,0 +1,20 @@
+---
+title: OAuth Callback
+description: GitHub OAuth callback handler
+---
+
+Handles the GitHub OAuth redirect. Accepts `code` and `state` query parameters and redirects the user back to the originating app (mobile, Expo, or web) with the auth code.
+
+### Query Parameters
+
+<ParamField query="code" type="string" required>
+  GitHub OAuth authorization code.
+</ParamField>
+
+<ParamField query="state" type="string" required>
+  Base64-encoded state containing the return origin URL.
+</ParamField>
+
+### Response
+
+Redirects to the origin URL with the auth code appended. Supports `myapp://`, `exp://`, and validated web origins.

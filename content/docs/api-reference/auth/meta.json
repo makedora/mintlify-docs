@@ -1,0 +1,3 @@
+{
+  "pages": ["oauth-callback", "oauth-token", "device-code", "device-token", "claude-oauth"]
+}

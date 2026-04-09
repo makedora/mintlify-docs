@@ -1,0 +1,13 @@
+---
+title: List Files
+description: List files in a sandbox directory
+---
+
+Lists files in a sandbox directory.
+
+<ParamField header="Authorization" type="string" required>Bearer token. `Bearer <github_token>`</ParamField>
+
+<ParamField path="sandboxId" type="string" required>Sandbox ID.</ParamField>
+<ParamField query="path" type="string" required>Directory path to list.</ParamField>
+
+<Note>For Daytona sandboxes, use `/api/daytona/{sandboxId}/files/list`.</Note>

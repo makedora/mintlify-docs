@@ -1,0 +1,3 @@
+{
+  "pages": ["list", "create", "get", "start", "stop", "resume", "archive", "exec", "chat"]
+}

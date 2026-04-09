@@ -1,0 +1,13 @@
+---
+title: Execute Command
+description: Run a shell command in a Daytona sandbox
+---
+
+Executes a shell command inside a Daytona sandbox.
+
+<ParamField header="Authorization" type="string" required>Bearer token. `Bearer <github_token>`</ParamField>
+
+<ParamField path="id" type="string" required>Sandbox ID.</ParamField>
+<ParamField body="command" type="string" required>Shell command to execute.</ParamField>
+
+<ResponseField name="output" type="string">Command output.</ResponseField>

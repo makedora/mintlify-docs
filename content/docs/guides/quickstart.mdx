@@ -1,0 +1,102 @@
+---
+title: Quickstart
+description: Create your first cloud sandbox in under a minute
+---
+
+## Prerequisites
+
+- A GitHub account
+- A GitHub personal access token (or use the device flow)
+
+<Warning>
+All API requests use a **GitHub** token (starts with `ghp_`). Do not use Claude API keys (`sk-ant-...`), Anthropic OAuth tokens, or other non-GitHub tokens.
+</Warning>
+
+## 1. Get a GitHub token
+
+Use the device flow to authenticate without managing tokens manually.
+
+<Note>
+The device flow requires opening a browser. In a headless environment, generate a token at [github.com/settings/tokens](https://github.com/settings/tokens) with scopes `user repo read:org workflow` instead.
+</Note>
+
+```bash
+# Initiate device flow
+curl -X POST https://api.yolocode.ai/api/github/device/code \
+  -H "Content-Type: application/json" \
+  -d '{"scope": "user repo read:org workflow"}'
+```
+
+This returns a `user_code` and `verification_uri`. Open the URL in your browser, enter the code, and then poll for the token:
+
+```bash
+# Poll for token
+curl -X POST https://api.yolocode.ai/api/github/device/token \
+  -H "Content-Type: application/json" \
+  -d '{"device_code": "<device_code_from_step_above>"}'
+```
+
+## 2. Create a sandbox
+
+```bash
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes \
+  -H "Authorization: Bearer <your_github_token_ghp_...>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-first-sandbox",
+    "taskDescription": "Set up a Next.js project",
+    "gitHubRepo": "your-username/your-repo",
+    "githubToken": "<your_github_token_ghp_...>"
+  }'
+```
+
+The response includes your sandbox details:
+
+```json
+{
+  "id": "sandbox-abc123",
+  "name": "my-first-sandbox",
+  "displayName": "nextjs-setup",
+  "status": "running",
+  "host": "sandbox-abc123.e2b.dev",
+  "websshHost": "sandbox-abc123-8888.e2b.dev",
+  "claudeHost": "sandbox-abc123-9999.e2b.dev"
+}
+```
+
+## 3. Run a command
+
+```bash
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<sandbox_id>/exec \
+  -H "Authorization: Bearer <your_github_token_ghp_...>" \
+  -H "Content-Type: application/json" \
+  -d '{"command": "ls -la"}'
+```
+
+## 4. Chat with Claude
+
+```bash
+curl -X POST https://api.yolocode.ai/api/e2b-sandboxes/<sandbox_id>/chat \
+  -H "Authorization: Bearer <your_github_token_ghp_...>" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What files are in this project?"}'
+```
+
+This returns a Server-Sent Events stream with Claude's response.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Sandbox lifecycle" icon="rotate" href="/docs/guides/sandboxes">
+    Learn about pausing, resuming, and managing sandboxes.
+  </Card>
+  <Card title="File management" icon="folder" href="/docs/guides/file-management">
+    Read and write files inside your sandbox.
+  </Card>
+  <Card title="Claude integration" icon="brain" href="/docs/guides/claude-integration">
+    Configure Claude OAuth credentials for full AI access.
+  </Card>
+  <Card title="API reference" icon="code" href="/docs/api-reference/introduction">
+    Explore every endpoint in detail.
+  </Card>
+</CardGroup>
