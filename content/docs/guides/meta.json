@@ -13,6 +13,8 @@
     "---AI & Streaming---",
     "claude-integration",
     "chat-streaming",
-    "transcription"
+    "transcription",
+    "---Browser Automation---",
+    "kernel"
   ]
 }
