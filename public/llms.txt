@@ -1,0 +1,43 @@
+# Kernel — Browsers-as-a-Service API for Web Agents
+# https://www.kernel.sh | Formerly OnKernel
+
+## Documentation Pages
+
+- /docs — Overview and core capabilities
+- /docs/quickstart — Get started in 5 minutes (install, auth, first browser)
+- /docs/browsers — Cloud browser sessions via CDP
+- /docs/apps — Deploy browser automations with Kernel CLI
+- /docs/troubleshooting — Common errors, package gotchas, correct doc URLs
+- /docs/api-reference — SDK reference, CLI commands, platform capabilities
+
+## Quick Start
+
+```bash
+npm install @onkernel/sdk playwright-core
+export KERNEL_API_KEY=your-key
+```
+
+```typescript
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright-core";
+
+const kernel = new Kernel();
+const kb = await kernel.browsers.create();
+const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
+const page = browser.contexts()[0].pages()[0];
+await page.goto("https://example.com");
+console.log(await page.title());
+await browser.close();
+```
+
+## Key Details
+
+- TypeScript SDK: `npm install @onkernel/sdk` (NOT `kernel` or `onkernel`)
+- Python SDK: `uv pip install kernel`
+- CLI: `brew install onkernel/tap/kernel`
+- Auth: `KERNEL_API_KEY` environment variable
+- Dashboard: https://dashboard.onkernel.com
+- Use `playwright-core` not `playwright` for deployed apps
+- Use `connectOverCDP()` not `connect()` — Kernel uses CDP
+- page.evaluate: use string literals, not arrow functions (bundler bug)
+- CDP retry: proxy may not be ready immediately after create(), retry with delay
