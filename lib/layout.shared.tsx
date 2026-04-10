@@ -3,12 +3,12 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: 'Yolocode',
+      title: 'Kernel',
     },
     links: [
-      { text: 'Support', url: 'mailto:support@yolocode.ai' },
-      { text: 'Launch App', url: 'https://yolocode.ai', external: true },
+      { text: 'Dashboard', url: 'https://dashboard.onkernel.com', external: true },
+      { text: 'Docs', url: 'https://www.kernel.sh/docs', external: true },
     ],
-    githubUrl: 'https://github.com/makedora',
+    githubUrl: 'https://github.com/onkernel',
   };
 }

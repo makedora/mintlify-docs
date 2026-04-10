@@ -1,0 +1,86 @@
+---
+title: API Reference
+description: Kernel SDK reference
+---
+
+## SDK Installation
+
+```bash
+# TypeScript
+npm install @onkernel/sdk
+
+# Python
+uv pip install kernel
+
+# CLI
+brew install onkernel/tap/kernel
+```
+
+## Authentication
+
+The SDK reads `KERNEL_API_KEY` from your environment:
+
+```bash
+export KERNEL_API_KEY=your-api-key-here
+```
+
+Or pass it directly:
+
+```typescript
+const kernel = new Kernel({ apiKey: "your-api-key-here" });
+```
+
+## Core API
+
+### Kernel (client)
+
+```typescript
+import Kernel from "@onkernel/sdk";
+const kernel = new Kernel();
+```
+
+### kernel.browsers.create()
+
+Creates a cloud browser instance and returns connection details.
+
+```typescript
+const browser = await kernel.browsers.create({
+  timeout: 3600,  // optional — session lifetime in seconds (max 259200 = 72h)
+  stealth: true,  // optional — enable anti-detection
+});
+
+// Returns:
+// {
+//   cdp_ws_url: "ws://...",  // CDP WebSocket URL for Playwright/Puppeteer
+//   session_id: "...",        // Session identifier
+// }
+```
+
+### CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `kernel login` | Authenticate via OAuth |
+| `kernel create` | Scaffold a new project |
+| `kernel deploy <file>` | Deploy an app |
+| `kernel invoke <app> <fn>` | Invoke a deployed function |
+
+## Platform capabilities
+
+| Feature | Details |
+|---------|---------|
+| Browser | Chromium via CDP |
+| VM isolation | Individual VM per browser |
+| Max session | 72 hours |
+| Concurrent browsers | Scalable |
+| Anti-detection | Stealth mode built-in |
+| Proxies | ISP, datacenter, residential, mobile |
+| Observability | Video replays, live view |
+| Extensions | Chrome Web Store or custom uploads |
+| Profiles | Persistent browser state across sessions |
+
+## Full API docs
+
+For the complete API reference including all endpoints, see [kernel.sh/docs](https://www.kernel.sh/docs).
+
+For structured AI-friendly docs: [kernel.sh/docs/llms.txt](https://www.kernel.sh/docs/llms.txt)

@@ -1,0 +1,64 @@
+---
+title: Deploy Apps
+description: Deploy browser automations as serverless functions
+---
+
+Kernel lets you deploy browser automation scripts as serverless functions. Deploy once, invoke on demand or on a schedule.
+
+## Install the CLI
+
+```bash
+brew install onkernel/tap/kernel
+```
+
+<Note>
+Use `kernel login` to authenticate the CLI before deploying. This opens a browser for OAuth.
+</Note>
+
+## Create a project
+
+```bash
+kernel create
+```
+
+This scaffolds a new project with a sample browser automation.
+
+## Deploy
+
+```bash
+# TypeScript
+kernel deploy index.ts
+
+# Python
+kernel deploy main.py
+
+# With environment variables
+kernel deploy index.ts --env-file .env
+```
+
+## Invoke
+
+```bash
+kernel invoke my-app my-function --payload '{"url": "https://example.com"}'
+```
+
+## Example app
+
+```typescript
+// index.ts
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright";
+
+export default {
+  async scrape({ url }: { url: string }) {
+    const kernel = new Kernel();
+    const kb = await kernel.browsers.create();
+    const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
+    const page = browser.contexts()[0].pages()[0];
+    await page.goto(url);
+    const title = await page.title();
+    await browser.close();
+    return { title };
+  }
+};
+```

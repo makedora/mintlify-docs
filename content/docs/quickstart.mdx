@@ -1,0 +1,89 @@
+---
+title: Quickstart
+description: Get up and running with Kernel in under 5 minutes
+---
+
+## 1. Create an account
+
+Sign up at [dashboard.onkernel.com](https://dashboard.onkernel.com/sign-up) to get your API key.
+
+## 2. Set your API key
+
+<Warning>
+The SDK reads `KERNEL_API_KEY` from your environment automatically. All examples below assume this is set.
+</Warning>
+
+```bash
+export KERNEL_API_KEY=your-api-key-here
+```
+
+## 3. Install the SDK
+
+<Note>
+The TypeScript package is `@onkernel/sdk` (not `kernel` or `kernel-sdk`). The Python package is `kernel`.
+</Note>
+
+```bash
+# TypeScript
+npm install @onkernel/sdk playwright
+
+# Python
+uv pip install kernel playwright
+```
+
+## 4. Create a browser and connect
+
+<Tabs>
+  <Tab title="TypeScript">
+```typescript
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright";
+
+const kernel = new Kernel();
+const kernelBrowser = await kernel.browsers.create();
+const browser = await chromium.connectOverCDP(kernelBrowser.cdp_ws_url);
+
+const page = browser.contexts()[0].pages()[0];
+await page.goto("https://news.ycombinator.com");
+console.log(await page.title());
+await page.screenshot({ path: "screenshot.png" });
+await browser.close();
+```
+  </Tab>
+  <Tab title="Python">
+```python
+from kernel import Kernel
+from playwright.async_api import async_playwright
+import asyncio
+
+async def main():
+    kernel = Kernel()
+    kernel_browser = kernel.browsers.create()
+
+    async with async_playwright() as pw:
+        browser = await pw.chromium.connect_over_cdp(kernel_browser.cdp_ws_url)
+        page = browser.contexts[0].pages[0]
+        await page.goto("https://news.ycombinator.com")
+        print(await page.title())
+        await page.screenshot(path="screenshot.png")
+        await browser.close()
+
+asyncio.run(main())
+```
+  </Tab>
+</Tabs>
+
+<Tip>
+The key return value from `kernel.browsers.create()` is `cdp_ws_url` — a Chrome DevTools Protocol WebSocket URL. Pass it to `connectOverCDP()` (TypeScript) or `connect_over_cdp()` (Python).
+</Tip>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Browser Sessions" href="/docs/browsers">
+    Session configuration, timeouts, and advanced features.
+  </Card>
+  <Card title="Deploy Apps" href="/docs/apps">
+    Deploy automations as serverless functions with the Kernel CLI.
+  </Card>
+</CardGroup>

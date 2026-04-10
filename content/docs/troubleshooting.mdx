@@ -1,0 +1,38 @@
+---
+title: Troubleshooting
+description: Common errors and how to fix them
+---
+
+## Common errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `KERNEL_API_KEY` not found | Missing environment variable | Run `export KERNEL_API_KEY=your-key`. Get key from [dashboard.onkernel.com](https://dashboard.onkernel.com) |
+| `cdp_ws_url` is undefined | Browser creation failed | Check your API key is valid. Check you haven't hit concurrent session limits |
+| Browser disconnects unexpectedly | Session timed out | Set longer timeout: `kernel.browsers.create({ timeout: 3600 })` |
+| `Cannot find module '@onkernel/sdk'` | Wrong package name or not installed | TypeScript: `npm install @onkernel/sdk`. Python: `uv pip install kernel` |
+| `kernel` CLI not found | CLI not installed | Run `brew install onkernel/tap/kernel` |
+| 404 on docs pages | Some doc paths don't exist yet | Use [kernel.sh/docs/llms.txt](https://www.kernel.sh/docs/llms.txt) for the full API reference index |
+| `connect()` fails but `connectOverCDP()` works | Wrong Playwright connection method | Kernel uses CDP — always use `connectOverCDP()` or `connect_over_cdp()` |
+
+## Package name gotchas
+
+<Warning>
+The package names are different per language and different from the product name:
+
+- **TypeScript/Node.js:** `@onkernel/sdk` (not `kernel`, not `kernel-sdk`, not `onkernel`)
+- **Python:** `kernel` (not `onkernel`, not `kernel-sdk`)
+- **CLI:** `onkernel/tap/kernel` via Homebrew
+</Warning>
+
+## Debugging tips
+
+<Tip>
+Kernel provides video replays and live view for browser sessions. Check the dashboard at [dashboard.onkernel.com](https://dashboard.onkernel.com) to watch session recordings.
+</Tip>
+
+## Getting help
+
+- [Kernel documentation](https://www.kernel.sh/docs)
+- [Dashboard](https://dashboard.onkernel.com)
+- [npm package](https://www.npmjs.com/package/@onkernel/sdk)
