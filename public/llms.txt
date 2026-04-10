@@ -1,0 +1,42 @@
+# Notte — Browser Platform for AI Agents
+# https://notte.cc | https://docs.notte.cc
+
+## Documentation Pages
+
+- /docs — Overview and core capabilities
+- /docs/quickstart — Get started in 5 minutes (install, auth, first session)
+- /docs/sessions — Browser sessions via CDP with Playwright
+- /docs/agents — Autonomous web agents from natural language
+- /docs/scraping — Structured data extraction with Pydantic
+- /docs/troubleshooting — Common errors and fixes
+- /docs/api-reference — SDK reference, authentication, pricing
+
+## Quick Start
+
+```bash
+pip install notte-sdk playwright
+export NOTTE_API_KEY=your-key
+```
+
+```python
+from playwright.sync_api import sync_playwright
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    cdp_url = session.cdp_url()
+    with sync_playwright() as p:
+        browser = p.chromium.connect_over_cdp(cdp_url)
+        page = browser.contexts[0].pages[0]
+        page.goto("https://example.com")
+        print(page.title())
+```
+
+## Key Details
+
+- SDK: `pip install notte-sdk` (Python >= 3.11) or `npm install notte-sdk`
+- Auth: `NOTTE_API_KEY` environment variable
+- Console: https://console.notte.cc
+- Timeout params: `idle_timeout_minutes`, `max_duration_minutes`
+- agent.run() signature: `agent.run(task="...", url="...")`
