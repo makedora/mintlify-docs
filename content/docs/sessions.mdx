@@ -1,0 +1,57 @@
+---
+title: Browser Sessions
+description: Remote Playwright sessions over Chrome DevTools Protocol
+---
+
+Browser sessions give you a cloud Chromium instance accessible via CDP. Connect with Playwright, Puppeteer, or any CDP-compatible tool.
+
+## Basic session
+
+```python
+from playwright.sync_api import sync_playwright
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    cdp_url = session.cdp_url()
+
+    with sync_playwright() as p:
+        browser = p.chromium.connect_over_cdp(cdp_url)
+        page = browser.contexts[0].pages[0]
+        page.goto("https://example.com")
+        content = page.content()
+        print(content)
+```
+
+<Tip>
+Use `open_viewer=True` to get a live view URL for debugging: `client.Session(open_viewer=True)`. The viewer URL is printed to stdout.
+</Tip>
+
+## Session lifecycle
+
+Sessions are managed with a context manager (`with` block). The session is created on entry and destroyed on exit. This ensures cleanup even if your script crashes.
+
+```python
+# Session is automatically cleaned up
+with client.Session() as session:
+    # ... your code here
+    pass
+# Session destroyed here
+```
+
+## Anti-detection and proxies
+
+Notte sessions include built-in anti-detection and residential proxy support. These are enabled by default — no extra configuration needed.
+
+## Key details
+
+| Feature | Value |
+|---------|-------|
+| Protocol | Chrome DevTools Protocol (CDP) |
+| Browser | Chromium |
+| Connection method | `connect_over_cdp(cdp_url)` |
+| Auto-cleanup | Yes (context manager) |
+| Anti-detection | Built-in |
+| Proxies | Residential, included |
+| Concurrent sessions (free) | Up to 5 |

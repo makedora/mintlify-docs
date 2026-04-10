@@ -1,0 +1,41 @@
+---
+title: Web Agents
+description: Autonomous AI agents that browse and complete tasks
+---
+
+Web agents handle complex navigation and data extraction from natural language prompts. No CSS selectors, no XPath, no maintenance — just describe what you want.
+
+## Basic usage
+
+```python
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    agent = client.Agent(session=session, max_steps=5)
+    response = agent.run(
+        task="Find the pricing page and extract all plan names and prices",
+        url="https://example.com"
+    )
+    print(response)
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `session` | Session | An active Notte session |
+| `max_steps` | int | Maximum navigation steps the agent can take |
+| `task` | str | Natural language description of what to do |
+| `url` | str | Starting URL |
+
+## Tips
+
+<Tip>
+Keep `max_steps` low (3-5) for simple tasks. Increase for multi-page workflows. Higher step counts use more tokens and browser time.
+</Tip>
+
+<Note>
+Agents are model-agnostic — they work with OpenAI, Anthropic, and Gemini. The model is configured on the Notte platform side.
+</Note>

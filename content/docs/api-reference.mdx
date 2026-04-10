@@ -1,0 +1,85 @@
+---
+title: API Reference
+description: Notte SDK reference
+---
+
+## SDK Installation
+
+```bash
+# Python (requires >= 3.11)
+pip install notte-sdk
+
+# JavaScript
+npm install notte-sdk
+```
+
+## Authentication
+
+The SDK reads `NOTTE_API_KEY` from your environment:
+
+```bash
+export NOTTE_API_KEY=your-api-key-here
+```
+
+Or pass it directly:
+
+```python
+client = NotteClient(api_key="your-api-key-here")
+```
+
+## Core classes
+
+### NotteClient
+
+The main entry point for all Notte operations.
+
+```python
+from notte_sdk import NotteClient
+
+client = NotteClient()
+```
+
+### Session
+
+A cloud browser session. Use as a context manager.
+
+```python
+with client.Session(open_viewer=True) as session:
+    cdp_url = session.cdp_url()
+    # Use cdp_url with Playwright, Puppeteer, etc.
+```
+
+### Agent
+
+An autonomous web agent bound to a session.
+
+```python
+agent = client.Agent(session=session, max_steps=5)
+response = agent.run(task="...", url="https://...")
+```
+
+### scrape()
+
+One-shot structured data extraction.
+
+```python
+result = client.scrape(
+    url="https://...",
+    response_format=MyPydanticModel,
+    instructions="..."
+)
+```
+
+## Pricing
+
+| Resource | Cost |
+|----------|------|
+| Browser time | $0.05/hour |
+| Proxy traffic | $10/GB |
+| Agent tokens | Pass-through (no markup) |
+
+Free tier: 100 browser hours, 5 concurrent sessions, no credit card required.
+
+## Full API docs
+
+For the complete API reference including REST endpoints, see [docs.notte.cc](https://docs.notte.cc).

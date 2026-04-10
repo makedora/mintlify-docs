@@ -3,12 +3,12 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
-      title: 'Yolocode',
+      title: 'Notte',
     },
     links: [
-      { text: 'Support', url: 'mailto:support@yolocode.ai' },
-      { text: 'Launch App', url: 'https://yolocode.ai', external: true },
+      { text: 'Console', url: 'https://console.notte.cc', external: true },
+      { text: 'Docs', url: 'https://docs.notte.cc', external: true },
     ],
-    githubUrl: 'https://github.com/makedora',
+    githubUrl: 'https://github.com/nottelabs',
   };
 }

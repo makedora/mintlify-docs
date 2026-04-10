@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: { template: '%s | Yolocode', default: 'Yolocode Docs' },
-  description: 'Cloud development sandboxes with built-in AI',
+  title: { template: '%s | Notte', default: 'Notte Docs' },
+  description: 'Browser platform for AI agents',
   icons: { icon: '/favicon.svg' },
 };
 

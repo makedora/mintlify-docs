@@ -1,0 +1,80 @@
+---
+title: Quickstart
+description: Get up and running with Notte in under 5 minutes
+---
+
+## 1. Create an account
+
+Sign up at [console.notte.cc](https://console.notte.cc) to get your API key. No credit card required — the free tier includes 100 browser hours.
+
+## 2. Set your API key
+
+<Warning>
+The SDK reads `NOTTE_API_KEY` from your environment automatically. All examples below assume this is set.
+</Warning>
+
+```bash
+export NOTTE_API_KEY=your-api-key-here
+```
+
+## 3. Install the SDK
+
+```bash
+# Python (requires >= 3.11)
+pip install notte-sdk
+
+# JavaScript
+npm install notte-sdk
+```
+
+<Note>
+For browser sessions with Playwright, also install it: `pip install playwright`
+</Note>
+
+## 4. Run your first session
+
+```python
+from playwright.sync_api import sync_playwright
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    cdp_url = session.cdp_url()
+
+    with sync_playwright() as p:
+        browser = p.chromium.connect_over_cdp(cdp_url)
+        page = browser.contexts[0].pages[0]
+        page.goto("https://news.ycombinator.com")
+        print(page.title())
+        page.screenshot(path="screenshot.png")
+```
+
+## 5. Try the web agent
+
+No selectors needed — describe what you want in natural language:
+
+```python
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    agent = client.Agent(session=session, max_steps=5)
+    response = agent.run(
+        task="Find the top 5 stories on Hacker News",
+        url="https://news.ycombinator.com"
+    )
+    print(response)
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Browser Sessions" href="/docs/sessions">
+    Deep dive into session configuration, proxies, and anti-detection.
+  </Card>
+  <Card title="Scraping" href="/docs/scraping">
+    Extract structured data with Pydantic models.
+  </Card>
+</CardGroup>
