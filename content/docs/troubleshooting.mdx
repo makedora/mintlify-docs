@@ -13,6 +13,8 @@ description: Common errors and how to fix them
 | `playwright._impl._errors.Error: Browser closed` | Session ended before script completed | Use the `with client.Session()` context manager for proper lifecycle management |
 | `ModuleNotFoundError: No module named 'notte_sdk'` | SDK not installed | Run `pip install notte-sdk`. Requires Python >= 3.11 |
 | `ModuleNotFoundError: No module named 'playwright'` | Playwright not installed | Run `pip install playwright` (needed for browser sessions, not for agents or scraping) |
+| `TypeError` on `agent.run()` | Passing a string instead of kwargs | Use `agent.run(task="...", url="...")` not `agent.run("...")` |
+| `timeoutMinutes` has no effect | Wrong parameter name | Use `idle_timeout_minutes` and `max_duration_minutes` (not `timeoutMinutes`) |
 
 ## Debugging tips
 

@@ -23,10 +23,20 @@ with client.Session() as session:
 
 ## Parameters
 
+`agent.run()` takes keyword arguments — not a single string:
+
+```python
+# Correct
+response = agent.run(task="...", url="https://...")
+
+# Wrong — do not pass a string
+response = agent.run("Find the top stories")  # TypeError
+```
+
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `session` | Session | An active Notte session |
-| `max_steps` | int | Maximum navigation steps the agent can take |
+| `session` | Session | An active Notte session (passed to `client.Agent()`) |
+| `max_steps` | int | Maximum navigation steps (passed to `client.Agent()`) |
 | `task` | str | Natural language description of what to do |
 | `url` | str | Starting URL |
 

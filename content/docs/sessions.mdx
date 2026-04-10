@@ -40,6 +40,22 @@ with client.Session() as session:
 # Session destroyed here
 ```
 
+## Session timeouts
+
+Configure session duration with `idle_timeout_minutes` and `max_duration_minutes`:
+
+```python
+with client.Session(
+    idle_timeout_minutes=30,      # close after 30min idle
+    max_duration_minutes=120,     # hard limit: 2 hours
+) as session:
+    # ...
+```
+
+<Warning>
+The parameter names are `idle_timeout_minutes` and `max_duration_minutes` — not `timeoutMinutes` or `timeout`. The SDK README may show different names; use the ones above.
+</Warning>
+
 ## Anti-detection and proxies
 
 Notte sessions include built-in anti-detection and residential proxy support. These are enabled by default — no extra configuration needed.
@@ -52,6 +68,7 @@ Notte sessions include built-in anti-detection and residential proxy support. Th
 | Browser | Chromium |
 | Connection method | `connect_over_cdp(cdp_url)` |
 | Auto-cleanup | Yes (context manager) |
+| Timeout params | `idle_timeout_minutes`, `max_duration_minutes` |
 | Anti-detection | Built-in |
 | Proxies | Residential, included |
 | Concurrent sessions (free) | Up to 5 |
