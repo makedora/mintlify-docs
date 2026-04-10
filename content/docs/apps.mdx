@@ -47,7 +47,7 @@ kernel invoke my-app my-function --payload '{"url": "https://example.com"}'
 ```typescript
 // index.ts
 import Kernel from "@onkernel/sdk";
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 
 export default {
   async scrape({ url }: { url: string }) {
@@ -62,3 +62,21 @@ export default {
   }
 };
 ```
+
+## Gotchas
+
+<Warning>
+**`page.evaluate` must use string literals, not arrow functions.** Kernel's deploy bundler injects `__name` helpers that break arrow functions inside `page.evaluate()`.
+</Warning>
+
+```typescript
+// Wrong — bundler breaks this
+const title = await page.evaluate(() => document.title);
+
+// Correct — use a string literal
+const title = await page.evaluate('document.title');
+```
+
+<Note>
+**Use `playwright-core`** in deployed apps, not `playwright`. The full package bundles browser binaries that aren't needed (Kernel provides the browser) and will break deployment.
+</Note>

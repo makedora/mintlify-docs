@@ -24,12 +24,16 @@ The TypeScript package is `@onkernel/sdk` (not `kernel` or `kernel-sdk`). The Py
 </Note>
 
 ```bash
-# TypeScript
-npm install @onkernel/sdk playwright
+# TypeScript — use playwright-core, NOT playwright
+npm install @onkernel/sdk playwright-core
 
 # Python
 uv pip install kernel playwright
 ```
+
+<Warning>
+For **deployed apps** (via `kernel deploy`), use `playwright-core` not `playwright`. The full `playwright` package includes browser binaries that break deployment — Kernel provides the browser, you just need the client library.
+</Warning>
 
 ## 4. Create a browser and connect
 
@@ -37,7 +41,7 @@ uv pip install kernel playwright
   <Tab title="TypeScript">
 ```typescript
 import Kernel from "@onkernel/sdk";
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 
 const kernel = new Kernel();
 const kernelBrowser = await kernel.browsers.create();

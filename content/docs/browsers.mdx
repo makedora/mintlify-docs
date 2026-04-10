@@ -17,18 +17,34 @@ console.log(browser.cdp_ws_url); // ws://...
 
 The `create()` call returns immediately with a `cdp_ws_url` you can pass to Playwright or Puppeteer.
 
+<Note>
+The CDP proxy may take a moment to become ready after `create()` returns. If `connectOverCDP()` fails on first attempt, retry after a short delay.
+</Note>
+
 ## Connecting with Playwright
 
 ```typescript
-import { chromium } from "playwright";
+import { chromium } from "playwright-core";
 
-const pw = await chromium.connectOverCDP(browser.cdp_ws_url);
+// Retry connection — CDP proxy may not be ready immediately
+async function connectWithRetry(cdpUrl: string, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await chromium.connectOverCDP(cdpUrl);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+}
+
+const pw = await connectWithRetry(browser.cdp_ws_url);
 const page = pw.contexts()[0].pages()[0];
 await page.goto("https://example.com");
 ```
 
 <Warning>
-Always use `connectOverCDP()` — not `connect()`. Kernel browsers expose a CDP endpoint, not a Playwright-native one.
+Always use `connectOverCDP()` — not `connect()`. Kernel browsers expose a CDP endpoint, not a Playwright-native one. Use `playwright-core` (not `playwright`) for deployed apps.
 </Warning>
 
 ## Session timeouts
