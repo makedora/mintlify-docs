@@ -30,31 +30,44 @@ Or pass it directly:
 const kernel = new Kernel({ apiKey: "your-api-key-here" });
 ```
 
-## Core API
-
-### Kernel (client)
+## Kernel (client)
 
 ```typescript
 import Kernel from "@onkernel/sdk";
-const kernel = new Kernel();
+
+const kernel = new Kernel({ apiKey?: string });
 ```
 
-### kernel.browsers.create()
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `apiKey` | `string \| undefined` | `undefined` | API key. Falls back to `KERNEL_API_KEY` env var |
+
+## kernel.browsers.create()
 
 Creates a cloud browser instance and returns connection details.
 
 ```typescript
 const browser = await kernel.browsers.create({
-  timeout: 3600,  // optional — session lifetime in seconds (max 259200 = 72h)
-  stealth: true,  // optional — enable anti-detection
+  timeout: 3600,
+  stealth: true,
 });
-
-// Returns:
-// {
-//   cdp_ws_url: "ws://...",  // CDP WebSocket URL for Playwright/Puppeteer
-//   session_id: "...",        // Session identifier
-// }
 ```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `timeout` | `number` | varies | Session lifetime in seconds. Max 259200 (72 hours) |
+| `stealth` | `boolean` | `false` | Enable anti-detection mode |
+
+**Returns:** `KernelBrowser`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `cdp_ws_url` | `string` | CDP WebSocket URL — pass to `connectOverCDP()` |
+| `session_id` | `string` | Session identifier |
+
+<Warning>
+The CDP proxy may not be ready immediately after `create()` returns. Add retry logic with a 2s delay if `connectOverCDP()` fails on first attempt. See [browsers](/docs/browsers) for a retry example.
+</Warning>
 
 ### CLI Commands
 

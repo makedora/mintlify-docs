@@ -13,6 +13,11 @@ const config = {
     { source: '/docs/sdk', destination: '/docs/api-reference', permanent: false },
     { source: '/docs/deploy', destination: '/docs/apps', permanent: false },
     { source: '/docs/apps/overview', destination: '/docs/apps', permanent: false },
+    { source: '/api-reference', destination: '/docs/api-reference', permanent: true },
+    { source: '/cloud-browsers', destination: '/docs/browsers', permanent: true },
+    { source: '/browsers', destination: '/docs/browsers', permanent: true },
+    { source: '/troubleshooting', destination: '/docs/troubleshooting', permanent: true },
+    { source: '/apps', destination: '/docs/apps', permanent: true },
   ],
 };
 
