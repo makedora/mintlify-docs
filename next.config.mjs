@@ -18,6 +18,12 @@ const config = {
     { source: '/browsers', destination: '/docs/browsers', permanent: true },
     { source: '/troubleshooting', destination: '/docs/troubleshooting', permanent: true },
     { source: '/apps', destination: '/docs/apps', permanent: true },
+    { source: '/getting-started/:path*', destination: '/docs/quickstart', permanent: false },
+    { source: '/reference/:path*', destination: '/docs/api-reference', permanent: false },
+    { source: '/guides/:path*', destination: '/docs/quickstart', permanent: false },
+    { source: '/docs/reference/:path*', destination: '/docs/api-reference', permanent: false },
+    { source: '/docs/guides/:path*', destination: '/docs/quickstart', permanent: false },
+    { source: '/docs/getting-started/:path*', destination: '/docs/quickstart', permanent: false },
   ],
 };
 

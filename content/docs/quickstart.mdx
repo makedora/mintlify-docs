@@ -138,26 +138,30 @@ kernel deploy index.ts --env-file .env
 kernel invoke my-app my-function --payload '{"url": "https://example.com"}'
 ```
 
-### Example deployed app
+### Example deployed app (typed payload)
 
 ```typescript
 import Kernel from "@onkernel/sdk";
 import { chromium } from "playwright-core";
 
-export default {
-  async scrape({ url }: { url: string }) {
-    const kernel = new Kernel();
-    const kb = await kernel.browsers.create({ timeout_seconds: 300 });
-    const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
-    const page = browser.contexts()[0].pages()[0];
-    await page.goto(url);
-    // Use string literals, not arrow functions (bundler bug)
-    const title = await page.evaluate('document.title');
-    await browser.close();
-    return { title };
-  }
-};
+const kernel = new Kernel();
+const app = kernel.app("my-scraper");
+
+// Typed payload — generic parameter defines the payload shape
+app.action<{ url: string }>("scrape", async (ctx, payload) => {
+  const kb = await ctx.browsers.create({ timeout_seconds: 300 });
+  const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
+  const page = browser.contexts()[0].pages()[0];
+  await page.goto(payload.url); // payload.url is typed as string
+  const title = await page.evaluate('document.title');
+  await browser.close();
+  return { title };
+});
 ```
+
+<Note>
+`app.action<PayloadType>()` uses a generic to type the payload parameter. Without the generic, payload is `unknown` and you'll get TypeScript errors accessing properties.
+</Note>
 
 <Warning>
 **`page.evaluate` must use string literals in deployed apps.** Kernel's deploy bundler injects `__name` helpers that break arrow functions inside `page.evaluate()`. Use `page.evaluate('document.title')` not `page.evaluate(() => document.title)`.
