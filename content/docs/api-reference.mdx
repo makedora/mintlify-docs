@@ -48,15 +48,19 @@ Creates a cloud browser instance and returns connection details.
 
 ```typescript
 const browser = await kernel.browsers.create({
-  timeout: 3600,
+  timeout_seconds: 3600,
   stealth: true,
 });
 ```
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `timeout` | `number` | varies | Session lifetime in seconds. Max 259200 (72 hours) |
+| `timeout_seconds` | `number` | varies | Session lifetime in seconds. Max 259200 (72 hours) |
 | `stealth` | `boolean` | `false` | Enable anti-detection mode |
+
+<Warning>
+The parameter is `timeout_seconds` — not `timeout`. Using `timeout` will be silently ignored.
+</Warning>
 
 **Returns:** `KernelBrowser`
 

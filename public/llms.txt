@@ -8,7 +8,7 @@
 - /docs/browsers — Cloud browsers: kernel.browsers.create() returns cdp_ws_url, connectOverCDP() pattern, CDP retry logic, session timeouts (up to 72h)
 - /docs/apps — Deploy apps: kernel CLI (create, deploy, invoke), playwright-core requirement, page.evaluate string literal gotcha
 - /docs/troubleshooting — Error catalog: wrong package names, CDP race condition, page.evaluate bundler bug, 404 doc paths, correct URLs table
-- /docs/api-reference — Full SDK reference: Kernel constructor, browsers.create() params (timeout, stealth), CLI commands, return types
+- /docs/api-reference — Full SDK reference: Kernel constructor, browsers.create() params (timeout_seconds NOT timeout, stealth), CLI commands, return types
 
 ## Quick Start
 
@@ -22,7 +22,7 @@ import Kernel from "@onkernel/sdk";
 import { chromium } from "playwright-core";
 
 const kernel = new Kernel();
-const kb = await kernel.browsers.create();
+const kb = await kernel.browsers.create({ timeout_seconds: 300 });
 const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
 const page = browser.contexts()[0].pages()[0];
 await page.goto("https://example.com");
@@ -41,3 +41,4 @@ await browser.close();
 - Use `connectOverCDP()` not `connect()` — Kernel uses CDP
 - page.evaluate: use string literals, not arrow functions (bundler bug)
 - CDP retry: proxy may not be ready immediately after create(), retry with delay
+- IMPORTANT: timeout param is `timeout_seconds` NOT `timeout` — `timeout` is silently ignored

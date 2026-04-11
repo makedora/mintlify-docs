@@ -44,8 +44,14 @@ import Kernel from "@onkernel/sdk";
 import { chromium } from "playwright-core";
 
 const kernel = new Kernel();
-const kernelBrowser = await kernel.browsers.create();
-const browser = await chromium.connectOverCDP(kernelBrowser.cdp_ws_url);
+const kernelBrowser = await kernel.browsers.create({ timeout_seconds: 300 });
+
+// CDP proxy may not be ready immediately — retry if needed
+let browser;
+for (let i = 0; i < 3; i++) {
+  try { browser = await chromium.connectOverCDP(kernelBrowser.cdp_ws_url); break; }
+  catch (e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 2000)); }
+}
 
 const page = browser.contexts()[0].pages()[0];
 await page.goto("https://news.ycombinator.com");

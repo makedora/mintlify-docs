@@ -53,9 +53,13 @@ By default, sessions have a limited lifetime. For long-running tasks, configure 
 
 ```typescript
 const browser = await kernel.browsers.create({
-  timeout: 3600 // seconds — up to 72 hours (259200)
+  timeout_seconds: 3600 // up to 72 hours (259200)
 });
 ```
+
+<Warning>
+The parameter is `timeout_seconds` — not `timeout`. Using `timeout` will be silently ignored and your session will use the default duration.
+</Warning>
 
 ## Key details
 
