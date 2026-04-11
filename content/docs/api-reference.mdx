@@ -27,48 +27,89 @@ Or pass it directly:
 client = NotteClient(api_key="your-api-key-here")
 ```
 
-## Core classes
-
-### NotteClient
-
-The main entry point for all Notte operations.
+## NotteClient
 
 ```python
 from notte_sdk import NotteClient
 
-client = NotteClient()
+client = NotteClient(api_key: str | None = None)
 ```
 
-### Session
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `api_key` | `str \| None` | `None` | API key. Falls back to `NOTTE_API_KEY` env var |
 
-A cloud browser session. Use as a context manager.
+## client.Session()
+
+Creates a cloud browser session. Use as a context manager.
 
 ```python
-with client.Session(open_viewer=True) as session:
+with client.Session(
+    open_viewer=False,
+    idle_timeout_minutes=30,
+    max_duration_minutes=120,
+) as session:
     cdp_url = session.cdp_url()
-    # Use cdp_url with Playwright, Puppeteer, etc.
 ```
 
-### Agent
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `open_viewer` | `bool` | `False` | Print a live view URL for debugging |
+| `idle_timeout_minutes` | `int` | `30` | Close session after N minutes idle |
+| `max_duration_minutes` | `int` | `120` | Hard session time limit |
 
-An autonomous web agent bound to a session.
+**Returns:** `Session` object with:
+- `session.cdp_url() → str` — CDP WebSocket URL for Playwright
+
+## client.Agent()
+
+Creates an autonomous web agent bound to a session.
 
 ```python
 agent = client.Agent(session=session, max_steps=5)
 response = agent.run(task="...", url="https://...")
 ```
 
-### scrape()
+**`client.Agent()` parameters:**
 
-One-shot structured data extraction.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `session` | `Session` | required | An active Notte session |
+| `max_steps` | `int` | `5` | Maximum navigation steps |
+
+**`agent.run()` parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `task` | `str` | required | Natural language task description |
+| `url` | `str` | required | Starting URL |
+
+<Warning>
+`agent.run()` takes **keyword arguments** — not a positional string. Use `agent.run(task="...", url="...")`.
+</Warning>
+
+**Returns:** `str` — agent's response text
+
+## client.scrape()
+
+One-shot structured data extraction with Pydantic models.
 
 ```python
 result = client.scrape(
-    url="https://...",
-    response_format=MyPydanticModel,
-    instructions="..."
+    url="https://news.ycombinator.com",
+    response_format=MyModel,
+    instructions="Extract the top 5 posts",
 )
 ```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `url` | `str` | required | Page to scrape |
+| `response_format` | `type[BaseModel]` | required | Pydantic model defining output schema |
+| `instructions` | `str` | required | What to extract (natural language) |
+
+**Returns:** `ScrapeResult` with:
+- `result.data` — parsed Pydantic model instance matching `response_format`
 
 ## Pricing
 

@@ -3,13 +3,13 @@
 
 ## Documentation Pages
 
-- /docs — Overview and core capabilities
-- /docs/quickstart — Get started in 5 minutes (install, auth, first session)
-- /docs/sessions — Browser sessions via CDP with Playwright
-- /docs/agents — Autonomous web agents from natural language
-- /docs/scraping — Structured data extraction with Pydantic
-- /docs/troubleshooting — Common errors and fixes
-- /docs/api-reference — SDK reference, authentication, pricing
+- /docs — Overview: what Notte is, core capabilities (sessions, agents, scraping), quick code example
+- /docs/quickstart — Step-by-step setup: create account, set NOTTE_API_KEY, install SDK, run first session, try web agent
+- /docs/sessions — Browser sessions via CDP: connect_over_cdp() pattern, Session() params (idle_timeout_minutes, max_duration_minutes), lifecycle, anti-detection
+- /docs/agents — Web agents: client.Agent() + agent.run(task=, url=) with kwargs (not positional string), max_steps config
+- /docs/scraping — Structured extraction: client.scrape(url=, response_format=PydanticModel, instructions=), returns typed data
+- /docs/troubleshooting — Error catalog: NOTTE_API_KEY not set, CDP -32601, session timeouts, wrong param names, agent.run() TypeError
+- /docs/api-reference — Full SDK reference: NotteClient, Session(), Agent(), scrape() with complete parameter tables, types, defaults, return types
 
 ## Quick Start
 
