@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Get up and running with Kernel in under 5 minutes
+description: Everything you need to build with Kernel — install, auth, browser, deploy
 ---
 
 ## 1. Create an account
@@ -68,7 +68,7 @@ import asyncio
 
 async def main():
     kernel = Kernel()
-    kernel_browser = kernel.browsers.create()
+    kernel_browser = kernel.browsers.create({ "timeout_seconds": 300 })
 
     async with async_playwright() as pw:
         browser = await pw.chromium.connect_over_cdp(kernel_browser.cdp_ws_url)
@@ -83,17 +83,94 @@ asyncio.run(main())
   </Tab>
 </Tabs>
 
-<Tip>
-The key return value from `kernel.browsers.create()` is `cdp_ws_url` — a Chrome DevTools Protocol WebSocket URL. Pass it to `connectOverCDP()` (TypeScript) or `connect_over_cdp()` (Python).
-</Tip>
+## API Reference
 
-## Next steps
+### Kernel(options?)
 
-<CardGroup cols={2}>
-  <Card title="Browser Sessions" href="/docs/browsers">
-    Session configuration, timeouts, and advanced features.
-  </Card>
-  <Card title="Deploy Apps" href="/docs/apps">
-    Deploy automations as serverless functions with the Kernel CLI.
-  </Card>
-</CardGroup>
+```typescript
+import Kernel from "@onkernel/sdk";
+const kernel = new Kernel({ apiKey?: string });
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `apiKey` | `string` | `KERNEL_API_KEY` env var | API key |
+
+### kernel.browsers.create(options?)
+
+```typescript
+const browser = await kernel.browsers.create({
+  timeout_seconds: 3600,
+  stealth: true,
+});
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `timeout_seconds` | `number` | varies | Session lifetime in seconds. Max 259200 (72h) |
+| `stealth` | `boolean` | `false` | Enable anti-detection |
+
+<Warning>
+The parameter is `timeout_seconds` — not `timeout`. Using `timeout` is silently ignored.
+</Warning>
+
+**Returns:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `cdp_ws_url` | `string` | CDP WebSocket URL — pass to `connectOverCDP()` |
+| `session_id` | `string` | Session identifier |
+
+## Deploy as an App
+
+```bash
+# Install CLI
+brew install onkernel/tap/kernel
+
+# Authenticate
+kernel login
+
+# Create and deploy
+kernel create
+kernel deploy index.ts --env-file .env
+
+# Invoke
+kernel invoke my-app my-function --payload '{"url": "https://example.com"}'
+```
+
+### Example deployed app
+
+```typescript
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright-core";
+
+export default {
+  async scrape({ url }: { url: string }) {
+    const kernel = new Kernel();
+    const kb = await kernel.browsers.create({ timeout_seconds: 300 });
+    const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
+    const page = browser.contexts()[0].pages()[0];
+    await page.goto(url);
+    // Use string literals, not arrow functions (bundler bug)
+    const title = await page.evaluate('document.title');
+    await browser.close();
+    return { title };
+  }
+};
+```
+
+<Warning>
+**`page.evaluate` must use string literals in deployed apps.** Kernel's deploy bundler injects `__name` helpers that break arrow functions inside `page.evaluate()`. Use `page.evaluate('document.title')` not `page.evaluate(() => document.title)`.
+</Warning>
+
+## Troubleshooting
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `KERNEL_API_KEY` not found | Missing env var | `export KERNEL_API_KEY=your-key` |
+| `timeout` has no effect | Wrong param name | Use `timeout_seconds` not `timeout` |
+| `connectOverCDP` fails after `create()` | CDP proxy not ready | Retry with 2s delay (see example above) |
+| `connect()` fails | Wrong method | Use `connectOverCDP()` — Kernel uses CDP |
+| Deploy fails with `playwright` | Bundles browser binaries | Use `playwright-core` instead |
+| `page.evaluate(() => ...)` errors | Bundler bug | Use string literals: `page.evaluate('...')` |
+| Wrong package name | Multiple names exist | TS: `@onkernel/sdk`, Python: `kernel`, CLI: `onkernel/tap/kernel` |

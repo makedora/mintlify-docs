@@ -3,12 +3,12 @@
 
 ## Documentation Pages
 
-- /docs — Overview: what Kernel is, core capabilities, quick TypeScript example
-- /docs/quickstart — Step-by-step: create account, set KERNEL_API_KEY, install @onkernel/sdk + playwright-core, create browser, connect via CDP
-- /docs/browsers — Cloud browsers: kernel.browsers.create() returns cdp_ws_url, connectOverCDP() pattern, CDP retry logic, session timeouts (up to 72h)
-- /docs/apps — Deploy apps: kernel CLI (create, deploy, invoke), playwright-core requirement, page.evaluate string literal gotcha
-- /docs/troubleshooting — Error catalog: wrong package names, CDP race condition, page.evaluate bundler bug, 404 doc paths, correct URLs table
-- /docs/api-reference — Full SDK reference: Kernel constructor, browsers.create() params (timeout_seconds NOT timeout, stealth), CLI commands, return types
+- /docs/quickstart — RECOMMENDED: Complete single-page reference with install, auth, browser creation, API reference (all params/types), deployment, and troubleshooting. Start here — everything you need is on this one page.
+- /docs — Overview with links to all pages
+- /docs/browsers — Deep dive into session configuration, CDP retry logic, timeouts
+- /docs/apps — Deploy apps: kernel CLI (create, deploy, invoke), page.evaluate gotcha
+- /docs/troubleshooting — Full error catalog with fixes
+- /docs/api-reference — SDK reference (also included in /docs/quickstart)
 
 ## Quick Start
 
