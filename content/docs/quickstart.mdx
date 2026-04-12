@@ -1,0 +1,65 @@
+---
+title: Quickstart
+description: Get up and running with Hyperbrowser in under 5 minutes
+---
+
+<Warning>
+Dashboard is at **app.hyperbrowser.ai** — not hyperbrowser.ai (that's the marketing site).
+</Warning>
+
+## 1. Create an account
+
+Sign up at [app.hyperbrowser.ai](https://app.hyperbrowser.ai) to get your API key.
+
+## 2. Set your API key
+
+```bash
+export HYPERBROWSER_API_KEY=your-api-key-here
+```
+
+## 3. Install the SDK
+
+```bash
+# Node.js
+npm install @hyperbrowser/sdk
+
+# Python
+pip install hyperbrowser
+```
+
+## 4. Scrape a page
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+const result = await client.scrape.startAndWait({
+  url: "https://news.ycombinator.com",
+});
+
+console.log(result.data);
+```
+
+That's it. No browser management, no CDP, no cleanup.
+
+<Note>
+**Common pitfalls:**
+- Package is `@hyperbrowser/sdk` (Node.js) or `hyperbrowser` (Python)
+- API key env var is `HYPERBROWSER_API_KEY`
+- Always call `client.sessions.stop(session.id)` if using manual sessions
+- `scrape.startAndWait()` handles everything — prefer it over manual sessions for simple tasks
+</Note>
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Sessions" href="/docs/sessions">
+    Manual browser sessions with Playwright over CDP.
+  </Card>
+  <Card title="API Reference" href="/docs/api-reference">
+    Full SDK reference with all methods and params.
+  </Card>
+</CardGroup>

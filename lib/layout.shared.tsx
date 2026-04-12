@@ -2,13 +2,11 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 
 export function baseOptions(): BaseLayoutProps {
   return {
-    nav: {
-      title: 'Yolocode',
-    },
+    nav: { title: 'Hyperbrowser' },
     links: [
-      { text: 'Support', url: 'mailto:support@yolocode.ai' },
-      { text: 'Launch App', url: 'https://yolocode.ai', external: true },
+      { text: 'Dashboard', url: 'https://app.hyperbrowser.ai', external: true },
+      { text: 'Docs', url: 'https://docs.hyperbrowser.ai', external: true },
     ],
-    githubUrl: 'https://github.com/makedora',
+    githubUrl: 'https://github.com/hyperbrowserai',
   };
 }

@@ -1,0 +1,81 @@
+---
+title: API Reference
+description: Hyperbrowser SDK reference
+---
+
+## Installation
+
+```bash
+# Node.js
+npm install @hyperbrowser/sdk
+
+# Python
+pip install hyperbrowser
+```
+
+## Hyperbrowser (client)
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `apiKey` | `string` | required | API key from [app.hyperbrowser.ai](https://app.hyperbrowser.ai) |
+
+## client.scrape.startAndWait(options)
+
+Scrapes a page and returns content. Handles browser lifecycle automatically.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `url` | `string` | required | Page to scrape |
+| `formats` | `string[]` | `["markdown"]` | `"markdown"`, `"html"`, `"links"` |
+| `onlyMainContent` | `boolean` | `false` | Strip nav/footer |
+| `timeout` | `number` | varies | Max wait ms |
+
+## client.extract.startAndWait(options)
+
+Extracts structured data using AI.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `urls` | `string[]` | required | Pages to extract from |
+| `schema` | `object` | required | JSON Schema for output |
+| `prompt` | `string` | optional | Extraction instructions |
+
+## client.sessions.create(options?)
+
+Creates a browser session for manual Playwright control.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `useStealth` | `boolean` | `false` | Anti-detection |
+| `useProxy` | `boolean` | `false` | Route through proxy |
+| `proxyCountry` | `string` | `undefined` | Proxy country |
+| `solveCaptchas` | `boolean` | `false` | Auto-solve CAPTCHAs |
+| `acceptCookies` | `boolean` | `false` | Auto-accept cookies |
+
+**Returns:** `Session` with:
+- `session.id` — session identifier (use with `sessions.stop()`)
+- `session.wsEndpoint` — CDP WebSocket URL for `connectOverCDP()`
+
+## client.sessions.stop(sessionId)
+
+Stops a session and frees resources. **Always call this in a `finally` block.**
+
+## client.agents.browserUse.startAndWait(options)
+
+Runs an autonomous browser agent.
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `task` | `string` | required | Natural language task description |
+
+## Full API docs
+
+For the complete API reference: [docs.hyperbrowser.ai](https://docs.hyperbrowser.ai)

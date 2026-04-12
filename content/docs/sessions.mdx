@@ -1,0 +1,63 @@
+---
+title: Sessions
+description: Browser sessions with Playwright over CDP
+---
+
+For full control, create a browser session and connect via CDP with Playwright.
+
+## Create a session
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+import { chromium } from "playwright-core";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+const session = await client.sessions.create();
+
+try {
+  const browser = await chromium.connectOverCDP(session.wsEndpoint);
+  const page = browser.contexts()[0].pages()[0];
+  await page.goto("https://news.ycombinator.com");
+  console.log(await page.title());
+  await page.screenshot({ path: "screenshot.png" });
+} finally {
+  await client.sessions.stop(session.id);
+}
+```
+
+<Warning>
+Always call `client.sessions.stop(session.id)` in a `finally` block. Leaked sessions consume cloud resources.
+</Warning>
+
+## Session options
+
+```typescript
+const session = await client.sessions.create({
+  useStealth: true,
+  useProxy: true,
+  proxyCountry: "US",
+  solveCaptchas: true,
+  acceptCookies: true,
+});
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `useStealth` | `boolean` | `false` | Anti-detection mode |
+| `useProxy` | `boolean` | `false` | Route through proxy |
+| `proxyCountry` | `string` | `undefined` | Proxy country code |
+| `solveCaptchas` | `boolean` | `false` | Auto-solve CAPTCHAs |
+| `acceptCookies` | `boolean` | `false` | Auto-accept cookie banners |
+
+## Key details
+
+| Feature | Value |
+|---------|-------|
+| Connection | `chromium.connectOverCDP(session.wsEndpoint)` |
+| Cleanup | `client.sessions.stop(session.id)` (required) |
+| Anti-detection | `useStealth: true` |
+| Proxies | Built-in, country-selectable |
+| CAPTCHAs | Auto-solve with `solveCaptchas: true` |

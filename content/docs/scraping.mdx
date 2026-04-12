@@ -1,0 +1,70 @@
+---
+title: Scraping
+description: Web scraping and structured data extraction
+---
+
+Hyperbrowser provides high-level scraping and extraction APIs that handle browser management automatically.
+
+## Scrape a page
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+const result = await client.scrape.startAndWait({
+  url: "https://news.ycombinator.com",
+  formats: ["markdown"],
+  onlyMainContent: true,
+});
+
+console.log(result.data);
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `url` | `string` | required | Page to scrape |
+| `formats` | `string[]` | `["markdown"]` | Output formats: `"markdown"`, `"html"`, `"links"` |
+| `onlyMainContent` | `boolean` | `false` | Strip nav/footer, keep main content |
+| `timeout` | `number` | varies | Max wait time in ms |
+
+## Extract structured data
+
+```typescript
+const result = await client.extract.startAndWait({
+  urls: ["https://news.ycombinator.com"],
+  schema: {
+    type: "object",
+    properties: {
+      stories: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            title: { type: "string" },
+            url: { type: "string" },
+            points: { type: "number" },
+          },
+        },
+      },
+    },
+  },
+  prompt: "Extract the top 5 stories",
+});
+
+console.log(result.data);
+```
+
+## AI agent
+
+For complex multi-step tasks, use the browser agent:
+
+```typescript
+const result = await client.agents.browserUse.startAndWait({
+  task: "Go to Hacker News and find the top 5 stories with their titles and point counts",
+});
+
+console.log(result.data);
+```

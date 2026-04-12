@@ -1,0 +1,41 @@
+# Hyperbrowser — Cloud Browser Platform for AI Agents
+# https://www.hyperbrowser.ai | https://docs.hyperbrowser.ai
+
+## Documentation Pages
+
+- /docs/quickstart — START HERE: 4 steps — install, auth, scrape a page. One working example.
+- /docs/sessions — Manual browser sessions: sessions.create(), connectOverCDP(session.wsEndpoint), sessions.stop()
+- /docs/scraping — Scraping + extraction: scrape.startAndWait(), extract.startAndWait(), agents.browserUse.startAndWait()
+- /docs/troubleshooting — Error catalog: leaked sessions, wrong endpoint, package names, OOM
+- /docs/api-reference — Full SDK reference: all methods, params, types, return values
+
+## Quick Start
+
+```bash
+npm install @hyperbrowser/sdk
+export HYPERBROWSER_API_KEY=your-key
+```
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+const result = await client.scrape.startAndWait({
+  url: "https://news.ycombinator.com",
+});
+console.log(result.data);
+```
+
+## Key Details
+
+- Node.js SDK: `npm install @hyperbrowser/sdk`
+- Python SDK: `pip install hyperbrowser`
+- Auth: `HYPERBROWSER_API_KEY` environment variable
+- Dashboard: https://app.hyperbrowser.ai
+- Simple scraping: use `scrape.startAndWait()` (no session management needed)
+- Manual sessions: always call `sessions.stop(session.id)` in finally block
+- CDP endpoint: `session.wsEndpoint` (not `session.url` or `session.cdp_ws_url`)
+- Session options: useStealth, useProxy, solveCaptchas, acceptCookies

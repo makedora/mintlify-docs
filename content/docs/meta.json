@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "quickstart",
+    "---Guides---",
+    "sessions",
+    "scraping",
+    "---Reference---",
+    "troubleshooting",
+    "api-reference"
+  ]
+}

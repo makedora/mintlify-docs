@@ -1,0 +1,38 @@
+---
+title: Troubleshooting
+description: Common errors and how to fix them
+---
+
+## Common errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `HYPERBROWSER_API_KEY` not found | Missing env var | `export HYPERBROWSER_API_KEY=your-key`. Get key from [app.hyperbrowser.ai](https://app.hyperbrowser.ai) |
+| Session leaked / high usage | Didn't stop session | Always call `client.sessions.stop(session.id)` in a `finally` block |
+| `connectOverCDP` fails | Wrong endpoint | Use `session.wsEndpoint` not `session.url` or `session.cdp_ws_url` |
+| Wrong package name | Confusion between platforms | Node.js: `@hyperbrowser/sdk`. Python: `hyperbrowser` |
+| OOM / Exit code 137 | Browser + Node.js exceeds memory | Allocate 2+ GB memory. Use `scrape.startAndWait()` instead of manual sessions when possible |
+| CAPTCHA blocks scraping | Anti-bot detection | Use `solveCaptchas: true` and `useStealth: true` in session options |
+
+## Package names
+
+<Warning>
+- **Node.js:** `@hyperbrowser/sdk` (not `hyperbrowser` — that's the Python package)
+- **Python:** `hyperbrowser` (not `@hyperbrowser/sdk`)
+</Warning>
+
+## When to use what
+
+| Use case | Method |
+|----------|--------|
+| Simple page scraping | `client.scrape.startAndWait()` |
+| Structured data extraction | `client.extract.startAndWait()` |
+| Complex multi-step tasks | `client.agents.browserUse.startAndWait()` |
+| Full Playwright control | `client.sessions.create()` + CDP |
+
+## Getting help
+
+- [Hyperbrowser docs](https://docs.hyperbrowser.ai)
+- [Dashboard](https://app.hyperbrowser.ai)
+- [GitHub](https://github.com/hyperbrowserai)
+- [npm package](https://www.npmjs.com/package/@hyperbrowser/sdk)
