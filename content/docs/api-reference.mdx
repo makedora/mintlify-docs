@@ -73,6 +73,26 @@ The parameter is `timeout_seconds` — not `timeout`. Using `timeout` will be si
 The CDP proxy may not be ready immediately after `create()` returns. Add retry logic with a 2s delay if `connectOverCDP()` fails on first attempt. See [browsers](/docs/browsers) for a retry example.
 </Warning>
 
+## app.action() — typed payload
+
+```typescript
+const app = kernel.app("my-scraper");
+
+app.action<{ url: string }>("scrape", async (ctx, payload) => {
+  const kb = await ctx.browsers.create({ timeout_seconds: 300 });
+  const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
+  const page = browser.contexts()[0].pages()[0];
+  await page.goto(payload.url); // payload.url is typed as string
+  const title = await page.evaluate('document.title');
+  await browser.close();
+  return { title };
+});
+```
+
+<Note>
+`app.action<PayloadType>()` uses a generic to type the payload. Without it, payload is `unknown` and you'll get TypeScript errors accessing properties.
+</Note>
+
 ### CLI Commands
 
 | Command | Description |

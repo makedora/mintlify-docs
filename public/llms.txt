@@ -3,12 +3,12 @@
 
 ## Documentation Pages
 
-- /docs/quickstart — RECOMMENDED: Complete single-page reference with install, auth, browser creation, API reference (all params/types), deployment, and troubleshooting. Start here — everything you need is on this one page.
-- /docs — Overview with links to all pages
-- /docs/browsers — Deep dive into session configuration, CDP retry logic, timeouts
-- /docs/apps — Deploy apps: kernel CLI (create, deploy, invoke), page.evaluate gotcha
-- /docs/troubleshooting — Full error catalog with fixes
-- /docs/api-reference — SDK reference (also included in /docs/quickstart)
+- /docs/quickstart — START HERE: 4 steps — install, auth, create browser, working example. ~50 lines, one fetch.
+- /docs/api-reference — Full SDK reference: all params, types, defaults, typed action payloads, CLI commands
+- /docs/browsers — Session config, CDP retry pattern, timeouts (timeout_seconds)
+- /docs/apps — Deploy as serverless: CLI workflow, page.evaluate string literal gotcha
+- /docs/troubleshooting — Error catalog with fixes
+- /docs — Overview with links
 
 ## Quick Start
 

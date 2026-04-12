@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: Everything you need to build with Kernel — install, auth, browser, deploy
+description: Get up and running with Kernel in under 5 minutes
 ---
 
 ## 1. Create an account
@@ -9,47 +9,29 @@ Sign up at [dashboard.onkernel.com](https://dashboard.onkernel.com/sign-up) to g
 
 ## 2. Set your API key
 
-<Warning>
-The SDK reads `KERNEL_API_KEY` from your environment automatically. All examples below assume this is set.
-</Warning>
-
 ```bash
 export KERNEL_API_KEY=your-api-key-here
 ```
 
 ## 3. Install the SDK
 
-<Note>
-The TypeScript package is `@onkernel/sdk` (not `kernel` or `kernel-sdk`). The Python package is `kernel`.
-</Note>
-
 ```bash
-# TypeScript — use playwright-core, NOT playwright
 npm install @onkernel/sdk playwright-core
-
-# Python
-uv pip install kernel playwright
 ```
 
-<Warning>
-For **deployed apps** (via `kernel deploy`), use `playwright-core` not `playwright`. The full `playwright` package includes browser binaries that break deployment — Kernel provides the browser, you just need the client library.
-</Warning>
+## 4. Create a browser and scrape a page
 
-## 4. Create a browser and connect
-
-<Tabs>
-  <Tab title="TypeScript">
 ```typescript
 import Kernel from "@onkernel/sdk";
 import { chromium } from "playwright-core";
 
 const kernel = new Kernel();
-const kernelBrowser = await kernel.browsers.create({ timeout_seconds: 300 });
+const kb = await kernel.browsers.create({ timeout_seconds: 300 });
 
-// CDP proxy may not be ready immediately — retry if needed
+// CDP proxy may need a moment — retry if needed
 let browser;
 for (let i = 0; i < 3; i++) {
-  try { browser = await chromium.connectOverCDP(kernelBrowser.cdp_ws_url); break; }
+  try { browser = await chromium.connectOverCDP(kb.cdp_ws_url); break; }
   catch (e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 2000)); }
 }
 
@@ -59,122 +41,16 @@ console.log(await page.title());
 await page.screenshot({ path: "screenshot.png" });
 await browser.close();
 ```
-  </Tab>
-  <Tab title="Python">
-```python
-from kernel import Kernel
-from playwright.async_api import async_playwright
-import asyncio
 
-async def main():
-    kernel = Kernel()
-    kernel_browser = kernel.browsers.create({ "timeout_seconds": 300 })
+That's it. You have a cloud browser.
 
-    async with async_playwright() as pw:
-        browser = await pw.chromium.connect_over_cdp(kernel_browser.cdp_ws_url)
-        page = browser.contexts[0].pages[0]
-        await page.goto("https://news.ycombinator.com")
-        print(await page.title())
-        await page.screenshot(path="screenshot.png")
-        await browser.close()
+## Next steps
 
-asyncio.run(main())
-```
-  </Tab>
-</Tabs>
-
-## API Reference
-
-### Kernel(options?)
-
-```typescript
-import Kernel from "@onkernel/sdk";
-const kernel = new Kernel({ apiKey?: string });
-```
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `apiKey` | `string` | `KERNEL_API_KEY` env var | API key |
-
-### kernel.browsers.create(options?)
-
-```typescript
-const browser = await kernel.browsers.create({
-  timeout_seconds: 3600,
-  stealth: true,
-});
-```
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `timeout_seconds` | `number` | varies | Session lifetime in seconds. Max 259200 (72h) |
-| `stealth` | `boolean` | `false` | Enable anti-detection |
-
-<Warning>
-The parameter is `timeout_seconds` — not `timeout`. Using `timeout` is silently ignored.
-</Warning>
-
-**Returns:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `cdp_ws_url` | `string` | CDP WebSocket URL — pass to `connectOverCDP()` |
-| `session_id` | `string` | Session identifier |
-
-## Deploy as an App
-
-```bash
-# Install CLI
-brew install onkernel/tap/kernel
-
-# Authenticate
-kernel login
-
-# Create and deploy
-kernel create
-kernel deploy index.ts --env-file .env
-
-# Invoke
-kernel invoke my-app my-function --payload '{"url": "https://example.com"}'
-```
-
-### Example deployed app (typed payload)
-
-```typescript
-import Kernel from "@onkernel/sdk";
-import { chromium } from "playwright-core";
-
-const kernel = new Kernel();
-const app = kernel.app("my-scraper");
-
-// Typed payload — generic parameter defines the payload shape
-app.action<{ url: string }>("scrape", async (ctx, payload) => {
-  const kb = await ctx.browsers.create({ timeout_seconds: 300 });
-  const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
-  const page = browser.contexts()[0].pages()[0];
-  await page.goto(payload.url); // payload.url is typed as string
-  const title = await page.evaluate('document.title');
-  await browser.close();
-  return { title };
-});
-```
-
-<Note>
-`app.action<PayloadType>()` uses a generic to type the payload parameter. Without the generic, payload is `unknown` and you'll get TypeScript errors accessing properties.
-</Note>
-
-<Warning>
-**`page.evaluate` must use string literals in deployed apps.** Kernel's deploy bundler injects `__name` helpers that break arrow functions inside `page.evaluate()`. Use `page.evaluate('document.title')` not `page.evaluate(() => document.title)`.
-</Warning>
-
-## Troubleshooting
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `KERNEL_API_KEY` not found | Missing env var | `export KERNEL_API_KEY=your-key` |
-| `timeout` has no effect | Wrong param name | Use `timeout_seconds` not `timeout` |
-| `connectOverCDP` fails after `create()` | CDP proxy not ready | Retry with 2s delay (see example above) |
-| `connect()` fails | Wrong method | Use `connectOverCDP()` — Kernel uses CDP |
-| Deploy fails with `playwright` | Bundles browser binaries | Use `playwright-core` instead |
-| `page.evaluate(() => ...)` errors | Bundler bug | Use string literals: `page.evaluate('...')` |
-| Wrong package name | Multiple names exist | TS: `@onkernel/sdk`, Python: `kernel`, CLI: `onkernel/tap/kernel` |
+<CardGroup cols={2}>
+  <Card title="API Reference" href="/docs/api-reference">
+    Full SDK reference with all parameter types and return values.
+  </Card>
+  <Card title="Deploy Apps" href="/docs/apps">
+    Deploy as serverless functions with the Kernel CLI.
+  </Card>
+</CardGroup>
