@@ -3,6 +3,10 @@ title: Quickstart
 description: Get up and running with Kernel in under 5 minutes
 ---
 
+<Warning>
+Developer dashboard is at **dashboard.onkernel.com** — not app.kernel.com or kernel.sh/dashboard.
+</Warning>
+
 ## 1. Create an account
 
 Sign up at [dashboard.onkernel.com](https://dashboard.onkernel.com/sign-up) to get your API key.
@@ -19,7 +23,40 @@ export KERNEL_API_KEY=your-api-key-here
 npm install @onkernel/sdk playwright-core
 ```
 
-## 4. Create a browser and scrape a page
+## 4. Run a browser task
+
+Use `browsers.playwright.execute()` — it handles browser creation, connection, and cleanup automatically:
+
+```typescript
+import Kernel from "@onkernel/sdk";
+
+const kernel = new Kernel();
+
+const result = await kernel.browsers.playwright.execute(async (browser) => {
+  const page = await browser.newPage();
+  await page.goto("https://news.ycombinator.com");
+  const title = await page.title();
+  await page.screenshot({ path: "screenshot.png" });
+  return { title };
+});
+
+console.log(result);
+```
+
+That's it. No CDP URLs, no retry logic, no manual cleanup.
+
+<Note>
+**Common pitfalls:**
+- Package is `@onkernel/sdk` (not `kernel` or `onkernel`)
+- Use `playwright-core` not `playwright` for deployed apps
+- Timeout param is `timeout_seconds` not `timeout` (silently ignored)
+- `page.evaluate`: use string literals, not arrow functions (bundler bug in deployed apps)
+- Dashboard: `dashboard.onkernel.com` (not app.kernel.com)
+</Note>
+
+## Advanced: direct CDP connection
+
+If you need lower-level control, connect via CDP manually:
 
 ```typescript
 import Kernel from "@onkernel/sdk";
@@ -38,11 +75,8 @@ for (let i = 0; i < 3; i++) {
 const page = browser.contexts()[0].pages()[0];
 await page.goto("https://news.ycombinator.com");
 console.log(await page.title());
-await page.screenshot({ path: "screenshot.png" });
 await browser.close();
 ```
-
-That's it. You have a cloud browser.
 
 ## Next steps
 
