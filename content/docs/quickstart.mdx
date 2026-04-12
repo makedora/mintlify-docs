@@ -3,54 +3,50 @@ title: Quickstart
 description: Get up and running with Kernel in under 5 minutes
 ---
 
-## 1. Create an account
-
-Sign up at [dashboard.onkernel.com](https://dashboard.onkernel.com/sign-up) to get your API key.
-
-## 2. Set your API key
-
-```bash
-export KERNEL_API_KEY=your-api-key-here
-```
-
-## 3. Install the SDK
+## Setup
 
 ```bash
 npm install @onkernel/sdk playwright-core
+export KERNEL_API_KEY=your-api-key    # get one at dashboard.onkernel.com
 ```
 
-## 4. Create a browser and scrape a page
+## Complete working example
+
+Copy this file and run it. It creates a cloud browser, navigates to Hacker News, extracts the top 5 story titles, and cleans up.
 
 ```typescript
 import Kernel from "@onkernel/sdk";
 import { chromium } from "playwright-core";
 
-const kernel = new Kernel();
-const kb = await kernel.browsers.create({ timeout_seconds: 300 });
+async function main() {
+  const kernel = new Kernel();
+  const kb = await kernel.browsers.create({ timeout_seconds: 300 });
 
-// CDP proxy may need a moment — retry if needed
-let browser;
-for (let i = 0; i < 3; i++) {
-  try { browser = await chromium.connectOverCDP(kb.cdp_ws_url); break; }
-  catch (e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 2000)); }
+  // CDP proxy may need a moment — retry connection
+  let browser;
+  for (let i = 0; i < 3; i++) {
+    try { browser = await chromium.connectOverCDP(kb.cdp_ws_url); break; }
+    catch (e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 2000)); }
+  }
+
+  const page = browser!.contexts()[0].pages()[0];
+  await page.goto("https://news.ycombinator.com");
+
+  // Extract top 5 story titles — use string literals, not arrow functions
+  const titles = await page.evaluate(`
+    Array.from(document.querySelectorAll('.titleline > a'))
+      .slice(0, 5)
+      .map(a => a.textContent)
+  `);
+
+  console.log("Top 5 HN stories:", titles);
+  await browser!.close();
 }
 
-const page = browser.contexts()[0].pages()[0];
-await page.goto("https://news.ycombinator.com");
-console.log(await page.title());
-await page.screenshot({ path: "screenshot.png" });
-await browser.close();
+main();
 ```
-
-That's it. You have a cloud browser.
 
 ## Next steps
 
-<CardGroup cols={2}>
-  <Card title="API Reference" href="/docs/api-reference">
-    Full SDK reference with all parameter types and return values.
-  </Card>
-  <Card title="Deploy Apps" href="/docs/apps">
-    Deploy as serverless functions with the Kernel CLI.
-  </Card>
-</CardGroup>
+- [API Reference](/docs/api-reference) — all params, types, typed action payloads
+- [Deploy Apps](/docs/apps) — deploy as serverless functions with `kernel deploy`

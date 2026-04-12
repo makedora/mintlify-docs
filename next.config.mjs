@@ -24,6 +24,7 @@ const config = {
     { source: '/docs/reference/:path*', destination: '/docs/api-reference', permanent: false },
     { source: '/docs/guides/:path*', destination: '/docs/quickstart', permanent: false },
     { source: '/docs/getting-started/:path*', destination: '/docs/quickstart', permanent: false },
+    { source: '/.well-known/llms.txt', destination: '/llms.txt', permanent: true },
   ],
 };
 
