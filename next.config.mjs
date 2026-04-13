@@ -10,6 +10,10 @@ const config = {
     { source: '/reference/:path*', destination: '/docs/api-reference', permanent: false },
     { source: '/guides/:path*', destination: '/docs/quickstart', permanent: false },
     { source: '/api-reference', destination: '/docs/api-reference', permanent: true },
+    { source: '/scraping', destination: '/docs/scraping', permanent: true },
+    { source: '/sessions', destination: '/docs/sessions', permanent: true },
+    { source: '/troubleshooting', destination: '/docs/troubleshooting', permanent: true },
+    { source: '/sdk/:path*', destination: '/docs/api-reference', permanent: false },
     { source: '/.well-known/llms.txt', destination: '/llms.txt', permanent: true },
   ],
 };
