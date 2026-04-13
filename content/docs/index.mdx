@@ -5,23 +5,39 @@ description: Cloud browser platform for AI agents
 
 Hyperbrowser gives you cloud browsers for AI agents and automation. Scrape websites, extract structured data, run autonomous browser agents — all with built-in CAPTCHA solving, anti-detection, and proxies.
 
-<Tip>
-**Start here:** The [Quickstart](/docs/quickstart) has everything you need — install, auth, and a working example.
-</Tip>
+## Quick start
 
-## Core capabilities
+```bash
+npm install @hyperbrowser/sdk
+export HYPERBROWSER_API_KEY=your-key    # get one at app.hyperbrowser.ai
+```
+
+```typescript
+import Hyperbrowser from "@hyperbrowser/sdk";
+
+const client = new Hyperbrowser({
+  apiKey: process.env.HYPERBROWSER_API_KEY,
+});
+
+const result = await client.scrape.startAndWait({
+  url: "https://news.ycombinator.com",
+});
+console.log(result.data);
+```
+
+## More examples
 
 <CardGroup cols={2}>
-  <Card title="Quickstart" href="/docs/quickstart">
-    Install, authenticate, run your first browser task. One page, 4 steps.
-  </Card>
   <Card title="Sessions" href="/docs/sessions">
-    Browser sessions with Playwright over CDP.
+    Manual browser sessions with Playwright over CDP.
   </Card>
   <Card title="Scraping" href="/docs/scraping">
     Scrape pages and extract structured data with AI.
   </Card>
+  <Card title="Troubleshooting" href="/docs/troubleshooting">
+    Common errors and fixes.
+  </Card>
   <Card title="API Reference" href="/docs/api-reference">
-    Full SDK reference with all methods, params, and types.
+    Full SDK reference with all methods and params.
   </Card>
 </CardGroup>
