@@ -1,27 +1,19 @@
 # Hyperbrowser — Cloud Browser Platform for AI Agents
-# https://www.hyperbrowser.ai | https://docs.hyperbrowser.ai
 
-## Documentation Pages
-
-- /docs/quickstart — START HERE: 4 steps — install, auth, scrape a page. One working example.
-- /docs/sessions — Manual browser sessions: sessions.create(), connectOverCDP(session.wsEndpoint), sessions.stop()
-- /docs/scraping — Scraping + extraction: scrape.startAndWait(), extract.startAndWait(), agents.browserUse.startAndWait()
-- /docs/troubleshooting — Error catalog: leaked sessions, wrong endpoint, package names, OOM
-- /docs/api-reference — Full SDK reference: all methods, params, types, return values
+For the complete self-contained reference (setup + all examples + API reference + gotchas in one file):
+https://docs.hyperbrowser.ai/.well-known/skills/hyperbrowser/SKILL.md
 
 ## Quick Start
 
 ```bash
 npm install @hyperbrowser/sdk
-export HYPERBROWSER_API_KEY=your-key
+export HYPERBROWSER_API_KEY=your-key    # get at app.hyperbrowser.ai
 ```
 
 ```typescript
 import Hyperbrowser from "@hyperbrowser/sdk";
 
-const client = new Hyperbrowser({
-  apiKey: process.env.HYPERBROWSER_API_KEY,
-});
+const client = new Hyperbrowser({ apiKey: process.env.HYPERBROWSER_API_KEY });
 
 const result = await client.scrape.startAndWait({
   url: "https://news.ycombinator.com",
@@ -29,13 +21,44 @@ const result = await client.scrape.startAndWait({
 console.log(result.data);
 ```
 
-## Key Details
+## API Methods
 
-- Node.js SDK: `npm install @hyperbrowser/sdk`
-- Python SDK: `pip install hyperbrowser`
-- Auth: `HYPERBROWSER_API_KEY` environment variable
-- Dashboard: https://app.hyperbrowser.ai
-- Simple scraping: use `scrape.startAndWait()` (no session management needed)
-- Manual sessions: always call `sessions.stop(session.id)` in finally block
-- CDP endpoint: `session.wsEndpoint` (not `session.url` or `session.cdp_ws_url`)
-- Session options: useStealth, useProxy, solveCaptchas, acceptCookies
+- `client.scrape.startAndWait({ url, formats?, onlyMainContent?, timeout? })` → scrape a page
+- `client.extract.startAndWait({ urls, schema, prompt? })` → structured data extraction
+- `client.sessions.create(options?)` → manual browser session
+  - options: `useStealth`, `useProxy`, `proxyCountry`, `solveCaptchas`, `acceptCookies`
+  - returns: `{ id, wsEndpoint }`
+- `client.sessions.stop(sessionId)` → REQUIRED cleanup (call in finally block)
+- `client.agents.browserUse.startAndWait({ task })` → autonomous browser agent
+
+## Manual Session Pattern
+
+```typescript
+import { chromium } from "playwright-core";
+
+const session = await client.sessions.create();
+try {
+  const browser = await chromium.connectOverCDP(session.wsEndpoint);
+  const page = browser.contexts()[0].pages()[0];
+  await page.goto("https://example.com");
+} finally {
+  await client.sessions.stop(session.id);  // REQUIRED
+}
+```
+
+## Key Gotchas
+
+- Package: `@hyperbrowser/sdk` (Node.js) / `hyperbrowser` (Python) — DIFFERENT names
+- Env var: `HYPERBROWSER_API_KEY`
+- CDP endpoint field: `session.wsEndpoint` (not `session.url` or `session.cdp_ws_url`)
+- Always `sessions.stop()` in finally block — leaked sessions consume cloud resources
+- Prefer `scrape.startAndWait()` over manual sessions for simple tasks
+- Dashboard: app.hyperbrowser.ai (not hyperbrowser.ai — that's marketing)
+
+## Doc Pages
+
+- /docs/quickstart — install, auth, first scrape
+- /docs/sessions — manual Playwright sessions over CDP
+- /docs/scraping — scrape + extract + browser agent
+- /docs/api-reference — full SDK reference
+- /docs/troubleshooting — error catalog
