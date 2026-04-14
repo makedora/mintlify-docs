@@ -1,6 +1,9 @@
 # Notte — Browser Platform for AI Agents
 # https://notte.cc | https://docs.notte.cc
 
+For the complete self-contained reference (also contains this file's content):
+https://docs.notte.cc/.well-known/skills/notte/SKILL.md
+
 ## Documentation Pages
 
 - /docs — Overview: what Notte is, core capabilities (sessions, agents, scraping), quick code example
