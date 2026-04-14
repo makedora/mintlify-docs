@@ -1,0 +1,7 @@
+{
+  "skills": [{
+    "name": "notte",
+    "description": "Browser platform for AI agents — sessions, web agents, structured scraping with Pydantic",
+    "files": ["notte/SKILL.md"]
+  }]
+}
