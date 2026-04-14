@@ -1,0 +1,9 @@
+{
+  "skills": [
+    {
+      "name": "hyperbrowser",
+      "description": "Cloud browser platform for AI agents \u2014 scrape, extract, automate with @hyperbrowser/sdk",
+      "files": ["hyperbrowser/SKILL.md"]
+    }
+  ]
+}
