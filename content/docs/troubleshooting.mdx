@@ -1,0 +1,37 @@
+---
+title: Troubleshooting
+description: Common errors and how to fix them
+---
+
+## Common errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `NOTTE_API_KEY is NOT SET` | Missing environment variable | Run `export NOTTE_API_KEY=your-key`. Get your key from [console.notte.cc](https://console.notte.cc) |
+| `'Page.enable' wasn't found` (CDP -32601) | CDP version mismatch with remote browser | Use `connect_over_cdp()` not `connect()`. Use `p.chromium` not `p.firefox` or `p.webkit` |
+| Session timeout / no response | Session expired or network issue | Sessions auto-close after inactivity. Create a new session and retry |
+| `playwright._impl._errors.Error: Browser closed` | Session ended before script completed | Use the `with client.Session()` context manager for proper lifecycle management |
+| `ModuleNotFoundError: No module named 'notte_sdk'` | SDK not installed | Run `pip install notte-sdk`. Requires Python >= 3.11 |
+| `ModuleNotFoundError: No module named 'playwright'` | Playwright not installed | Run `pip install playwright` (needed for browser sessions, not for agents or scraping) |
+| `TypeError` on `agent.run()` | Passing a string instead of kwargs | Use `agent.run(task="...", url="...")` not `agent.run("...")` |
+| `timeoutMinutes` has no effect | Wrong parameter name | Use `idle_timeout_minutes` and `max_duration_minutes` (not `timeoutMinutes`) |
+
+## Debugging tips
+
+<Tip>
+Enable the live viewer to watch your session in real-time: `client.Session(open_viewer=True)`. The viewer URL is printed when the session starts.
+</Tip>
+
+## Authentication errors
+
+If you see authentication errors on the Notte console:
+
+1. Verify your API key is correct: `echo $NOTTE_API_KEY`
+2. Check the key hasn't expired in [console.notte.cc](https://console.notte.cc)
+3. Ensure you're not exceeding your plan's concurrent session limit (free: 5 sessions)
+
+## Getting help
+
+- [Notte documentation](https://docs.notte.cc)
+- [Notte console](https://console.notte.cc)
+- [GitHub](https://github.com/nottelabs)

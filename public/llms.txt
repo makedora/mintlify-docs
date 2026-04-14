@@ -1,0 +1,126 @@
+# Notte — Browser Platform for AI Agents
+# https://notte.cc | https://docs.notte.cc
+
+For the complete self-contained reference (also contains this file's content):
+https://docs.notte.cc/.well-known/skills/notte/SKILL.md
+
+## Documentation Pages
+
+- /docs — Overview: what Notte is, core capabilities (sessions, agents, scraping), quick code example
+- /docs/quickstart — Step-by-step setup: create account, set NOTTE_API_KEY, install SDK, run first session, try web agent
+- /docs/sessions — Browser sessions via CDP: connect_over_cdp() pattern, Session() params, lifecycle, anti-detection
+- /docs/agents — Web agents: client.Agent() + agent.run(task=, url=) with kwargs (not positional string), max_steps config
+- /docs/scraping — Structured extraction: client.scrape(url=, response_format=PydanticModel, instructions=), returns typed data
+- /docs/troubleshooting — Error catalog: NOTTE_API_KEY not set, CDP -32601, session timeouts, wrong param names, agent.run() TypeError
+- /docs/api-reference — Full SDK reference with parameter tables, types, defaults, return types
+
+## Installation
+
+```bash
+pip install notte-sdk playwright
+export NOTTE_API_KEY=your-key-from-console.notte.cc
+```
+
+## Complete API Reference
+
+### NotteClient(api_key: str | None = None)
+- api_key: falls back to NOTTE_API_KEY env var
+
+### client.Session(open_viewer=False, idle_timeout_minutes=30, max_duration_minutes=120)
+- open_viewer (bool, default False): print live view URL for debugging
+- idle_timeout_minutes (int, default 30): close after N minutes idle
+- max_duration_minutes (int, default 120): hard session time limit
+- Returns: Session context manager
+- session.cdp_url() → str: CDP WebSocket URL for Playwright
+
+### client.Agent(session, max_steps=5)
+- session (Session): an active Notte session (required)
+- max_steps (int, default 5): max navigation steps
+
+### agent.run(task, url) → str
+- task (str): natural language task description (REQUIRED, keyword arg)
+- url (str): starting URL (REQUIRED, keyword arg)
+- IMPORTANT: takes kwargs, NOT positional string. Use agent.run(task="...", url="...")
+- Returns: str (agent's response text)
+
+### client.scrape(url, response_format, instructions) → ScrapeResult
+- url (str): page to scrape (required)
+- response_format (type[BaseModel]): Pydantic model for output schema (required)
+- instructions (str): what to extract in natural language (required)
+- Returns: ScrapeResult with result.data (parsed Pydantic model instance)
+
+## Full Working Examples
+
+### Browser Session (Playwright over CDP)
+
+```python
+from playwright.sync_api import sync_playwright
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    cdp_url = session.cdp_url()
+    with sync_playwright() as p:
+        browser = p.chromium.connect_over_cdp(cdp_url)
+        page = browser.contexts[0].pages[0]
+        page.goto("https://news.ycombinator.com")
+        print(page.title())
+        page.screenshot(path="screenshot.png")
+```
+
+### Web Agent
+
+```python
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+with client.Session() as session:
+    agent = client.Agent(session=session, max_steps=5)
+    response = agent.run(
+        task="Find the top 5 stories on Hacker News",
+        url="https://news.ycombinator.com"
+    )
+    print(response)
+```
+
+### Scraping with Pydantic
+
+```python
+from pydantic import BaseModel
+from notte_sdk import NotteClient
+
+class Story(BaseModel):
+    title: str
+    url: str
+    points: int
+
+class Feed(BaseModel):
+    stories: list[Story]
+
+client = NotteClient()
+result = client.scrape(
+    url="https://news.ycombinator.com",
+    response_format=Feed,
+    instructions="Extract the top 5 posts"
+)
+for i, s in enumerate(result.data.stories, 1):
+    print(f"{i}. {s.points}pts - {s.title}")
+```
+
+## Common Errors
+
+- NOTTE_API_KEY is NOT SET → export NOTTE_API_KEY=your-key
+- 'Page.enable' not found (CDP -32601) → use connect_over_cdp() not connect(), use p.chromium not p.firefox
+- TypeError on agent.run() → use kwargs: agent.run(task="...", url="...") not agent.run("...")
+- timeoutMinutes has no effect → use idle_timeout_minutes and max_duration_minutes
+- ModuleNotFoundError notte_sdk → pip install notte-sdk (requires Python >= 3.11)
+- ModuleNotFoundError playwright → pip install playwright (only needed for browser sessions)
+
+## Pricing
+
+- Browser: $0.05/hour
+- Proxy: $10/GB
+- Agent tokens: pass-through (no markup)
+- Free tier: 100 browser hours, 5 concurrent sessions, no credit card

@@ -1,0 +1,50 @@
+---
+title: Scraping
+description: Extract structured data with AI and Pydantic models
+---
+
+The scraping API extracts structured data from any webpage. Define a Pydantic model for your output schema, and Notte handles navigation, extraction, and parsing.
+
+## Basic scraping
+
+```python
+from pydantic import BaseModel
+from notte_sdk import NotteClient
+
+class Story(BaseModel):
+    title: str
+    url: str
+    points: int
+
+class Feed(BaseModel):
+    stories: list[Story]
+
+client = NotteClient()
+
+result = client.scrape(
+    url="https://news.ycombinator.com",
+    response_format=Feed,
+    instructions="Extract the top 5 posts from the front page"
+)
+
+for i, story in enumerate(result.data.stories, 1):
+    print(f"{i}. {story.points}pts - {story.title}")
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `url` | str | Page to scrape |
+| `response_format` | BaseModel | Pydantic model defining the output schema |
+| `instructions` | str | What to extract (natural language) |
+
+## Tips
+
+<Tip>
+Be specific in your `instructions`. "Extract the top 5 posts" works better than "get posts". Include field names if the page is ambiguous.
+</Tip>
+
+<Note>
+The `response_format` model is enforced — Notte will return data matching your exact schema or raise an error. No need to validate manually.
+</Note>

@@ -1,0 +1,41 @@
+---
+title: Notte
+description: Browser platform for AI agents
+---
+
+Notte is a full-stack browser infrastructure platform for AI agents. Launch cloud browsers, run autonomous web agents, and extract structured data — all through a simple SDK.
+
+<Tip>
+**AI agents:** Install as a skill with `npx skills add https://docs.notte.cc` — or fetch [/llms.txt](/llms.txt) / [/.well-known/skills/notte/SKILL.md](/.well-known/skills/notte/SKILL.md) directly. One file with all examples, API, and gotchas.
+</Tip>
+
+## Core capabilities
+
+<CardGroup cols={2}>
+  <Card title="Browser Sessions" href="/docs/sessions">
+    Remote Playwright sessions over CDP. Fast, scalable browsers with anti-detection, proxies, and captcha solving.
+  </Card>
+  <Card title="Web Agents" href="/docs/agents">
+    AI agents that browse, understand, and complete tasks autonomously from natural language prompts.
+  </Card>
+  <Card title="Scraping" href="/docs/scraping">
+    Extract structured data from any website using AI. Returns typed Pydantic models.
+  </Card>
+  <Card title="Troubleshooting" href="/docs/troubleshooting">
+    Common errors, fixes, and debugging tips.
+  </Card>
+</CardGroup>
+
+## Quick example
+
+```python
+from notte_sdk import NotteClient
+
+client = NotteClient()
+
+result = client.scrape(
+    url="https://news.ycombinator.com",
+    instructions="Extract the top 5 stories with title, URL, and points"
+)
+print(result.data)
+```
