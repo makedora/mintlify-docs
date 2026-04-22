@@ -1,0 +1,41 @@
+---
+title: Kernel
+description: Browsers-as-a-Service API for web agents
+---
+
+Kernel gives you cloud browsers through a simple API. Create a browser, get a CDP WebSocket URL, connect with Playwright or Puppeteer. Each browser runs in its own VM with up to 72-hour sessions. Formerly known as OnKernel.
+
+<Tip>
+**AI agents:** Install as a skill with `npx skills add https://www.kernel.sh` — or fetch [/llms.txt](/llms.txt) / [/.well-known/skills/kernel/SKILL.md](/.well-known/skills/kernel/SKILL.md) directly. One file with all examples, API, and gotchas.
+</Tip>
+
+## Core capabilities
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" href="/docs/quickstart">
+    Complete guide: install, auth, create browser, connect CDP, deploy apps, API reference, troubleshooting — all in one page.
+  </Card>
+  <Card title="Cloud Browsers" href="/docs/browsers">
+    Deep dive into session configuration, CDP retry, and timeouts.
+  </Card>
+  <Card title="Deploy Apps" href="/docs/apps">
+    Deploy browser automations as serverless functions with the Kernel CLI.
+  </Card>
+  <Card title="Troubleshooting" href="/docs/troubleshooting">
+    Common errors, package gotchas, and debugging tips.
+  </Card>
+</CardGroup>
+
+## Quick example
+
+```typescript
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright";
+
+const kernel = new Kernel();
+const browser = await kernel.browsers.create();
+const pw = await chromium.connectOverCDP(browser.cdp_ws_url);
+const page = pw.contexts()[0].pages()[0];
+await page.goto("https://news.ycombinator.com");
+console.log(await page.title());
+```
