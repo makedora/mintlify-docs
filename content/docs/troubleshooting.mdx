@@ -1,0 +1,57 @@
+---
+title: Troubleshooting
+description: Common errors and how to fix them
+---
+
+## Common errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `KERNEL_API_KEY` not found | Missing environment variable | Run `export KERNEL_API_KEY=your-key`. Get key from [dashboard.onkernel.com](https://dashboard.onkernel.com) |
+| `cdp_ws_url` is undefined | Browser creation failed | Check your API key is valid. Check you haven't hit concurrent session limits |
+| Browser disconnects unexpectedly | Session timed out | Set longer timeout: `kernel.browsers.create({ timeout_seconds: 3600 })` |
+| `timeout` param has no effect | Wrong parameter name | Use `timeout_seconds` not `timeout` — `timeout` is silently ignored |
+| `Cannot find module '@onkernel/sdk'` | Wrong package name or not installed | TypeScript: `npm install @onkernel/sdk`. Python: `uv pip install kernel` |
+| `kernel` CLI not found | CLI not installed | Run `brew install onkernel/tap/kernel` |
+| 404 on docs pages | Some doc paths don't exist yet | Use [kernel.sh/docs/llms.txt](https://www.kernel.sh/docs/llms.txt) for the full API reference index |
+| `connect()` fails but `connectOverCDP()` works | Wrong Playwright connection method | Kernel uses CDP — always use `connectOverCDP()` or `connect_over_cdp()` |
+| `page.evaluate(() => ...)` throws runtime error | Bundler injects `__name` helper that breaks arrow functions | Use string literals: `page.evaluate('document.title')` instead of arrow functions |
+| `connectOverCDP` fails immediately after `create()` | CDP proxy not ready yet | Add retry logic with 2s delay between attempts (see [browsers](/docs/browsers)) |
+| Deploy fails with `playwright` package | Full `playwright` bundles browser binaries | Use `playwright-core` instead — Kernel provides the browser |
+
+## Package name gotchas
+
+<Warning>
+The package names are different per language and different from the product name:
+
+- **TypeScript/Node.js:** `@onkernel/sdk` (not `kernel`, not `kernel-sdk`, not `onkernel`)
+- **Python:** `kernel` (not `onkernel`, not `kernel-sdk`)
+- **CLI:** `onkernel/tap/kernel` via Homebrew
+</Warning>
+
+## Debugging tips
+
+<Tip>
+Kernel provides video replays and live view for browser sessions. Check the dashboard at [dashboard.onkernel.com](https://dashboard.onkernel.com) to watch session recordings.
+</Tip>
+
+## Correct documentation paths
+
+Many `/docs/*` paths return 404. These are the correct URLs:
+
+| Page | URL |
+|------|-----|
+| Quickstart | [kernel.sh/docs/quickstart](https://www.kernel.sh/docs/quickstart) |
+| Deploy apps | [kernel.sh/docs/apps/deploy](https://www.kernel.sh/docs/apps/deploy) |
+| Invoke apps | [kernel.sh/docs/apps/invoke](https://www.kernel.sh/docs/apps/invoke) |
+| Full API index | [kernel.sh/docs/llms.txt](https://www.kernel.sh/docs/llms.txt) |
+
+<Tip>
+If you can't find a docs page, fetch [kernel.sh/docs/llms.txt](https://www.kernel.sh/docs/llms.txt) — it has the complete documentation index with all valid URLs.
+</Tip>
+
+## Getting help
+
+- [Kernel documentation](https://www.kernel.sh/docs)
+- [Dashboard](https://dashboard.onkernel.com)
+- [npm package](https://www.npmjs.com/package/@onkernel/sdk)

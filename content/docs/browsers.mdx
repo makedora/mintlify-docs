@@ -1,0 +1,74 @@
+---
+title: Cloud Browsers
+description: Create and control browser instances via CDP
+---
+
+Kernel browsers are cloud Chromium instances accessible via the Chrome DevTools Protocol. Each browser runs in its own isolated VM.
+
+## Creating a browser
+
+```typescript
+import Kernel from "@onkernel/sdk";
+
+const kernel = new Kernel();
+const browser = await kernel.browsers.create();
+console.log(browser.cdp_ws_url); // ws://...
+```
+
+The `create()` call returns immediately with a `cdp_ws_url` you can pass to Playwright or Puppeteer.
+
+<Note>
+The CDP proxy may take a moment to become ready after `create()` returns. If `connectOverCDP()` fails on first attempt, retry after a short delay.
+</Note>
+
+## Connecting with Playwright
+
+```typescript
+import { chromium } from "playwright-core";
+
+// Retry connection — CDP proxy may not be ready immediately
+async function connectWithRetry(cdpUrl: string, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await chromium.connectOverCDP(cdpUrl);
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      await new Promise(r => setTimeout(r, 2000));
+    }
+  }
+}
+
+const pw = await connectWithRetry(browser.cdp_ws_url);
+const page = pw.contexts()[0].pages()[0];
+await page.goto("https://example.com");
+```
+
+<Warning>
+Always use `connectOverCDP()` — not `connect()`. Kernel browsers expose a CDP endpoint, not a Playwright-native one. Use `playwright-core` (not `playwright`) for deployed apps.
+</Warning>
+
+## Session timeouts
+
+By default, sessions have a limited lifetime. For long-running tasks, configure a longer timeout:
+
+```typescript
+const browser = await kernel.browsers.create({
+  timeout_seconds: 3600 // up to 72 hours (259200)
+});
+```
+
+<Warning>
+The parameter is `timeout_seconds` — not `timeout`. Using `timeout` will be silently ignored and your session will use the default duration.
+</Warning>
+
+## Key details
+
+| Feature | Value |
+|---------|-------|
+| Protocol | Chrome DevTools Protocol (CDP) |
+| Browser | Chromium |
+| Isolation | Individual VM per browser |
+| Max session | 72 hours |
+| Connection | `connectOverCDP(cdp_ws_url)` |
+| Observability | Video replays, live view |
+| Stealth mode | Built-in anti-detection |

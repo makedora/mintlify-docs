@@ -1,0 +1,7 @@
+{
+  "skills": [{
+    "name": "kernel",
+    "description": "Browsers-as-a-Service API for web agents — create cloud browsers, connect via CDP, deploy automations",
+    "files": ["kernel/SKILL.md"]
+  }]
+}

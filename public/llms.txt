@@ -1,0 +1,59 @@
+# Kernel — Browsers-as-a-Service API for Web Agents (formerly OnKernel)
+
+For the complete self-contained reference (setup + all examples + API reference + gotchas in one file):
+https://www.kernel.sh/.well-known/skills/kernel/SKILL.md
+
+## Quick Start
+
+```bash
+npm install @onkernel/sdk playwright-core
+export KERNEL_API_KEY=your-key    # get at dashboard.onkernel.com
+```
+
+```typescript
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright-core";
+
+const kernel = new Kernel();
+const kb = await kernel.browsers.create({ timeout_seconds: 300 });
+
+// CDP proxy may need a moment — retry
+let browser;
+for (let i = 0; i < 3; i++) {
+  try { browser = await chromium.connectOverCDP(kb.cdp_ws_url); break; }
+  catch (e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 2000)); }
+}
+
+const page = browser.contexts()[0].pages()[0];
+await page.goto("https://example.com");
+console.log(await page.title());
+await browser.close();
+```
+
+## API Methods
+
+- `new Kernel({ apiKey? })` → constructor (falls back to KERNEL_API_KEY env var)
+- `kernel.browsers.create({ timeout_seconds?, stealth? })` → returns `{ cdp_ws_url, session_id }`
+- `kernel.app(name).action<PayloadType>(name, fn)` → typed serverless action
+- CLI: `kernel login`, `kernel create`, `kernel deploy <file>`, `kernel invoke <app> <fn>`
+
+## Key Gotchas
+
+- Package: `@onkernel/sdk` (Node.js) / `kernel` (Python) — DIFFERENT names
+- CLI: `brew install onkernel/tap/kernel`
+- Env var: `KERNEL_API_KEY`
+- Timeout: `timeout_seconds` NOT `timeout` — `timeout` is silently ignored
+- Use `connectOverCDP()` NOT `connect()` — Kernel exposes CDP endpoint
+- Use `playwright-core` NOT `playwright` for deployed apps (full package breaks bundler)
+- CDP proxy not ready immediately after `create()` — retry connection with 2s delay
+- `page.evaluate`: use string literals in deployed apps (`'document.title'`), not arrow functions — bundler `__name` helper breaks them
+- `app.action<PayloadType>()` generic is required for typed payload — without it payload is `unknown`
+- Dashboard: dashboard.onkernel.com
+
+## Doc Pages
+
+- /docs/quickstart — install, auth, first browser
+- /docs/browsers — session config, CDP retry, timeouts
+- /docs/apps — deploy as serverless, CLI workflow
+- /docs/api-reference — full SDK reference
+- /docs/troubleshooting — error catalog

@@ -1,0 +1,90 @@
+---
+title: Quickstart
+description: Get up and running with Kernel in under 5 minutes
+---
+
+<Warning>
+Developer dashboard is at **dashboard.onkernel.com** — not app.kernel.com or kernel.sh/dashboard.
+</Warning>
+
+## 1. Create an account
+
+Sign up at [dashboard.onkernel.com](https://dashboard.onkernel.com/sign-up) to get your API key.
+
+## 2. Set your API key
+
+```bash
+export KERNEL_API_KEY=your-api-key-here
+```
+
+## 3. Install the SDK
+
+```bash
+npm install @onkernel/sdk playwright-core
+```
+
+## 4. Run a browser task
+
+Use `browsers.playwright.execute()` — it handles browser creation, connection, and cleanup automatically:
+
+```typescript
+import Kernel from "@onkernel/sdk";
+
+const kernel = new Kernel();
+
+const result = await kernel.browsers.playwright.execute(async (browser) => {
+  const page = await browser.newPage();
+  await page.goto("https://news.ycombinator.com");
+  const title = await page.title();
+  await page.screenshot({ path: "screenshot.png" });
+  return { title };
+});
+
+console.log(result);
+```
+
+That's it. No CDP URLs, no retry logic, no manual cleanup.
+
+<Note>
+**Common pitfalls:**
+- Package is `@onkernel/sdk` (not `kernel` or `onkernel`)
+- Use `playwright-core` not `playwright` for deployed apps
+- Timeout param is `timeout_seconds` not `timeout` (silently ignored)
+- `page.evaluate`: use string literals, not arrow functions (bundler bug in deployed apps)
+- Dashboard: `dashboard.onkernel.com` (not app.kernel.com)
+</Note>
+
+## Advanced: direct CDP connection
+
+If you need lower-level control, connect via CDP manually:
+
+```typescript
+import Kernel from "@onkernel/sdk";
+import { chromium } from "playwright-core";
+
+const kernel = new Kernel();
+const kb = await kernel.browsers.create({ timeout_seconds: 300 });
+
+// CDP proxy may need a moment — retry if needed
+let browser;
+for (let i = 0; i < 3; i++) {
+  try { browser = await chromium.connectOverCDP(kb.cdp_ws_url); break; }
+  catch (e) { if (i === 2) throw e; await new Promise(r => setTimeout(r, 2000)); }
+}
+
+const page = browser.contexts()[0].pages()[0];
+await page.goto("https://news.ycombinator.com");
+console.log(await page.title());
+await browser.close();
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="API Reference" href="/docs/api-reference">
+    Full SDK reference with all parameter types and return values.
+  </Card>
+  <Card title="Deploy Apps" href="/docs/apps">
+    Deploy as serverless functions with the Kernel CLI.
+  </Card>
+</CardGroup>

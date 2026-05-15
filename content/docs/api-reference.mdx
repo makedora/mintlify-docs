@@ -1,0 +1,123 @@
+---
+title: API Reference
+description: Kernel SDK reference
+---
+
+## SDK Installation
+
+```bash
+# TypeScript
+npm install @onkernel/sdk
+
+# Python
+uv pip install kernel
+
+# CLI
+brew install onkernel/tap/kernel
+```
+
+## Authentication
+
+The SDK reads `KERNEL_API_KEY` from your environment:
+
+```bash
+export KERNEL_API_KEY=your-api-key-here
+```
+
+Or pass it directly:
+
+```typescript
+const kernel = new Kernel({ apiKey: "your-api-key-here" });
+```
+
+## Kernel (client)
+
+```typescript
+import Kernel from "@onkernel/sdk";
+
+const kernel = new Kernel({ apiKey?: string });
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `apiKey` | `string \| undefined` | `undefined` | API key. Falls back to `KERNEL_API_KEY` env var |
+
+## kernel.browsers.create()
+
+Creates a cloud browser instance and returns connection details.
+
+```typescript
+const browser = await kernel.browsers.create({
+  timeout_seconds: 3600,
+  stealth: true,
+});
+```
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `timeout_seconds` | `number` | varies | Session lifetime in seconds. Max 259200 (72 hours) |
+| `stealth` | `boolean` | `false` | Enable anti-detection mode |
+
+<Warning>
+The parameter is `timeout_seconds` — not `timeout`. Using `timeout` will be silently ignored.
+</Warning>
+
+**Returns:** `KernelBrowser`
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `cdp_ws_url` | `string` | CDP WebSocket URL — pass to `connectOverCDP()` |
+| `session_id` | `string` | Session identifier |
+
+<Warning>
+The CDP proxy may not be ready immediately after `create()` returns. Add retry logic with a 2s delay if `connectOverCDP()` fails on first attempt. See [browsers](/docs/browsers) for a retry example.
+</Warning>
+
+## app.action() — typed payload
+
+```typescript
+const app = kernel.app("my-scraper");
+
+app.action<{ url: string }>("scrape", async (ctx, payload) => {
+  const kb = await ctx.browsers.create({ timeout_seconds: 300 });
+  const browser = await chromium.connectOverCDP(kb.cdp_ws_url);
+  const page = browser.contexts()[0].pages()[0];
+  await page.goto(payload.url); // payload.url is typed as string
+  const title = await page.evaluate('document.title');
+  await browser.close();
+  return { title };
+});
+```
+
+<Note>
+`app.action<PayloadType>()` uses a generic to type the payload. Without it, payload is `unknown` and you'll get TypeScript errors accessing properties.
+</Note>
+
+### CLI Commands
+
+| Command | Description |
+|---------|-------------|
+| `kernel login` | Authenticate via OAuth |
+| `kernel create` | Scaffold a new project |
+| `kernel deploy <file>` | Deploy an app |
+| `kernel invoke <app> <fn>` | Invoke a deployed function |
+
+## Platform capabilities
+
+| Feature | Details |
+|---------|---------|
+| Browser | Chromium via CDP |
+| VM isolation | Individual VM per browser |
+| Max session | 72 hours |
+| Concurrent browsers | Scalable |
+| Anti-detection | Stealth mode built-in |
+| Proxies | ISP, datacenter, residential, mobile |
+| Observability | Video replays, live view |
+| Extensions | Chrome Web Store or custom uploads |
+| Profiles | Persistent browser state across sessions |
+
+## Full API docs
+
+For the complete API reference including all endpoints, see [kernel.sh/docs](https://www.kernel.sh/docs).
+
+For structured AI-friendly docs: [kernel.sh/docs/llms.txt](https://www.kernel.sh/docs/llms.txt)
